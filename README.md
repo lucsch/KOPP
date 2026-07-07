@@ -1,5 +1,7 @@
 # KOPP
 
+![](art/kopp_icon.png)
+
 ## Introduction
 
 Keep track of your timetable and your hours
