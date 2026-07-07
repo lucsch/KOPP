@@ -7,6 +7,7 @@ import wx.dataview
 import wx.svg
 
 from kopp.framemainlist import FrameMainListView
+from kopp.frameabout import FrameAbout
 
 from kopp.version import COMMIT_NUMBER
 from kopp.version import VERSION_MAJOR_MINOR
@@ -29,6 +30,11 @@ class FrameMain(wx.Frame):
         self._create_toolbar()
         self._create_controls()
 
+        self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
+
+    def on_about(self, event):
+        frame = FrameAbout(self, program_name="KOPP")
+        frame.Show()
 
     def _create_menubar(self):
         self.m_menubar = wx.MenuBar(0)
