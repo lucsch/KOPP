@@ -1,0 +1,18 @@
+
+Table records {
+  record_id integer [primary key]
+  date datetime
+  hr_base integer
+  hr_maj integer
+  annual integer
+  vac integer
+  error_id integer
+  comment varchar
+}
+
+Table errors {
+  id integer [not null]
+  desc varchar
+}
+
+Ref: "errors"."id" < "records"."error_id"
