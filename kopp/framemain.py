@@ -3,9 +3,11 @@ import os
 from pathlib import Path
 
 import wx
+import wx.aui
 import wx.dataview
 import wx.svg
 
+from kopp.frameinfo import FrameInfo
 from kopp.framemainlist import FrameMainListView
 from kopp.frameabout import FrameAbout
 from kopp.database import ProjectDatabase
@@ -39,7 +41,10 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_new_project, id=self.m_menui_file_new.GetId())
         self.Bind(wx.EVT_MENU, self.on_open_project, id=self.m_menui_file_open.GetId())
         self.Bind(wx.EVT_MENU, self.on_save_project, id=self.m_menui_file_save.GetId())
+        self.Bind(wx.EVT_MENU, self.on_view_info, id=self.m_menu_view_info.GetId())
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
+        self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
+        self.Bind(wx.EVT_CLOSE, self.on_close)
 
         # open a new project
         self.on_new_project(None)
@@ -90,6 +95,20 @@ class FrameMain(wx.Frame):
     def on_about(self, event):
         frame = FrameAbout(self, program_name=PROG_NAME)
         frame.Show()
+
+    def on_view_info(self, event):
+        pane = self.m_aui_manager.GetPane(self.m_info)
+        pane.Show(event.IsChecked())
+        self.m_aui_manager.Update()
+
+    def on_pane_close(self, event):
+        if event.GetPane().window == self.m_info:
+            self.m_menu_view_info.Check(False)
+        event.Skip()
+
+    def on_close(self, event):
+        self.m_aui_manager.UnInit()
+        event.Skip()
 
     def _create_menubar(self):
         self.m_menubar = wx.MenuBar(0)
@@ -157,12 +176,30 @@ class FrameMain(wx.Frame):
     def _create_controls(self):
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
 
-        bSizer1 = wx.BoxSizer(wx.VERTICAL)
-
+        self.m_aui_manager = wx.aui.AuiManager(self)
         self.m_list = FrameMainListView(self, wx.ID_ANY)
-        bSizer1.Add(self.m_list, 1, wx.ALL | wx.EXPAND, 5)
+        self.m_info = FrameInfo(self)
 
-        self.SetSizer(bSizer1)
-        self.Layout()
+        self.m_aui_manager.AddPane(
+            self.m_list,
+            wx.aui.AuiPaneInfo()
+            .Name("records")
+            .CenterPane()
+            .PaneBorder(False),
+        )
+        self.m_aui_manager.AddPane(
+            self.m_info,
+            wx.aui.AuiPaneInfo()
+            .Name("info")
+            .Caption(_(u"Info window"))
+            .Right()
+            .BestSize(wx.Size(300, -1))
+            .MinSize(wx.Size(200, -1))
+            .CloseButton(True)
+            .MaximizeButton(False)
+            .PaneBorder(False)
+            .Dockable(True),
+        )
+
+        self.m_aui_manager.Update()
         self.Centre(wx.BOTH)
-
