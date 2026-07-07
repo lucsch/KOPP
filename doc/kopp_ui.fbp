@@ -176,6 +176,19 @@
             <property name="name">m_menu_file_recent</property>
             <property name="permission">protected</property>
           </object>
+          <object class="wxMenuItem" expanded="true">
+            <property name="bitmap"></property>
+            <property name="checked">0</property>
+            <property name="enabled">1</property>
+            <property name="help"></property>
+            <property name="id">wxID_ANY</property>
+            <property name="kind">wxITEM_NORMAL</property>
+            <property name="label">Save as...</property>
+            <property name="name">m_menui_file_save</property>
+            <property name="permission">none</property>
+            <property name="shortcut">Ctrl+S</property>
+            <property name="unchecked_bitmap"></property>
+          </object>
           <object class="separator" expanded="true">
             <property name="name">m_separator1</property>
             <property name="permission">none</property>

@@ -10,7 +10,7 @@ class Database:
     def __init__(self, database_filename:str):
         self.database_filename = database_filename
         db = SqliteDatabase(self.database_filename, pragmas={
-            'journal_mode': 'wal',  # Allow readers while writer active.
+            # 'journal_mode': 'wal',  # Allow readers while writer active. (generate multiple wal and shm files)
             'cache_size': -64000,  # 64 MB page cache.
             'foreign_keys': 1,  # Enforce FK constraints.
         })
@@ -36,7 +36,7 @@ class Database:
         return Records.select()
 
     def get_record_by_id(self, record_id:int):
-        return Records.get(Records.id == record_id)
+        return Records.get(Records.record_id == record_id)
 
     def get_error_by_id(self, error_id:int):
         return Errors.get(Errors.id == error_id)
@@ -47,8 +47,12 @@ class ProjectDatabase:
         self.database = None
         self.database_filename = None
 
+    def __del__(self):
+        self.close_project()
+
     def new_project(self):
         """Create a new project database in memory"""
+        self.close_project()
         self.database = Database(':memory:')
         self.database_filename = None
 

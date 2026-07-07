@@ -11,3 +11,6 @@ wheels/
 
 # auto-generated files
 kopp/version.py
+
+# local files
+_local*

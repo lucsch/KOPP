@@ -37,6 +37,7 @@ class GitVersion:
 # DO NOT MODIFY!
 # ---------------------------------------------------
 """)
+        file.write("PROG_NAME = \"""KOPP\"""\n")
         file.write("COMMIT_ID = \"" + self.m_commit_id + '"\n')
         file.write("COMMIT_NUMBER = \"" + self.m_commit_number + '"\n')
         file.write("BRANCH_NAME = \"" + self.m_branch_name + '"\n')

@@ -8,9 +8,11 @@ import wx.svg
 
 from kopp.framemainlist import FrameMainListView
 from kopp.frameabout import FrameAbout
+from kopp.database import ProjectDatabase
 
 from kopp.version import COMMIT_NUMBER
 from kopp.version import VERSION_MAJOR_MINOR
+from kopp.version import PROG_NAME
 
 _ = gettext.gettext
 
@@ -18,7 +20,7 @@ _ = gettext.gettext
 class FrameMain(wx.Frame):
 
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=_(u"KOPP"), pos=wx.DefaultPosition,
+        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=PROG_NAME, pos=wx.DefaultPosition,
                           size=wx.Size(1000, 600), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         self.m_status_bar = self.CreateStatusBar(3, wx.STB_DEFAULT_STYLE, wx.ID_ANY)
@@ -30,10 +32,63 @@ class FrameMain(wx.Frame):
         self._create_toolbar()
         self._create_controls()
 
+        self.m_prj_database = ProjectDatabase()
+        self.m_prj_modified = False
+        self.m_prj_in_memory = False
+
+        self.Bind(wx.EVT_MENU, self.on_new_project, id=self.m_menui_file_new.GetId())
+        self.Bind(wx.EVT_MENU, self.on_open_project, id=self.m_menui_file_open.GetId())
+        self.Bind(wx.EVT_MENU, self.on_save_project, id=self.m_menui_file_save.GetId())
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
 
+        # open a new project
+        self.on_new_project(None)
+
+    def on_new_project(self, event):
+        self.m_prj_database.new_project()
+        self.m_status_bar.SetStatusText(wx.EmptyString, 1)
+        self.m_prj_modified = False
+        self.m_prj_in_memory = True
+
+    def on_open_project(self, event):
+        with wx.FileDialog(
+                self, _("Open Project"),defaultDir="",defaultFile="",
+                wildcard="Kopp project files (*.kdb)|*.kdb|All files (*.*)|*.*",
+                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as dlg:
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+            filename = dlg.GetPath()
+            self.open_project(filename)
+
+    def open_project(self, filename:str):
+        if not self.m_prj_database.open_project(filename):
+            wx.MessageBox(_("Failed to open project {}").format(filename), _("Error"), wx.OK | wx.ICON_ERROR)
+            return
+        self.m_status_bar.SetStatusText(filename, 1)
+        self.m_prj_modified = False
+        self.m_prj_in_memory = False
+
+    def on_save_project(self, event):
+        default_dir = ""
+        default_file = "project.kdb"
+
+        if self.m_prj_database.database_filename:
+            default_dir = os.path.dirname(self.m_prj_database.database_filename)
+            default_file = os.path.basename(self.m_prj_database.database_filename)
+
+        with wx.FileDialog(self,_("Save Project"),defaultDir=default_dir,defaultFile=default_file,
+                wildcard="Kopp project files (*.kdb)|*.kdb|All files (*.*)|*.*",
+                           style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+            if fileDialog.ShowModal() != wx.ID_OK:
+                return
+            filename = fileDialog.GetPath()
+            if not self.m_prj_database.save_project(filename):
+                wx.MessageBox(_("Failed to save project {}").format(filename), _("Error"), wx.OK | wx.ICON_ERROR)
+                return
+            self.open_project(filename)
+
     def on_about(self, event):
-        frame = FrameAbout(self, program_name="KOPP")
+        frame = FrameAbout(self, program_name=PROG_NAME)
         frame.Show()
 
     def _create_menubar(self):
@@ -48,6 +103,10 @@ class FrameMain(wx.Frame):
 
         self.m_menu_file_recent = wx.Menu()
         self.m_menu_file.AppendSubMenu(self.m_menu_file_recent, _(u"Recent"))
+
+        self.m_menui_file_save = wx.MenuItem(self.m_menu_file, wx.ID_ANY, _(u"Save as...") + u"\t" + u"Ctrl+S",
+                                             wx.EmptyString, wx.ITEM_NORMAL)
+        self.m_menu_file.Append(self.m_menui_file_save)
 
         self.m_menu_file.AppendSeparator()
 
