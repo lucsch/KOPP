@@ -43,6 +43,8 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_open_project, id=self.m_menui_file_open.GetId())
         self.Bind(wx.EVT_MENU, self.on_save_project, id=self.m_menui_file_save.GetId())
         self.Bind(wx.EVT_MENU, self.on_add_record, id=self.m_menui_rec_add.GetId())
+        self.Bind(wx.EVT_MENU, self.on_edit_record, id=self.m_menui_rec_edit.GetId())
+        self.Bind(wx.EVT_MENU, self.on_delete_record, id=self.m_menui_rec_delete.GetId())
         self.Bind(wx.EVT_MENU, self.on_view_info, id=self.m_menu_view_info.GetId())
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
         self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
@@ -102,6 +104,12 @@ class FrameMain(wx.Frame):
 
         self.m_prj_modified = True
         # TODO: get the data from the frame and save it to the database
+
+    def on_edit_record(self, event):
+        pass
+
+    def on_delete_record(self, event):
+        pass
 
     def on_about(self, event):
         frame = FrameAbout(self, program_name=PROG_NAME)
