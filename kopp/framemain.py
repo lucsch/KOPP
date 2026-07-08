@@ -116,8 +116,8 @@ class FrameMain(wx.Frame):
             return
         frame.TransferDataFromWindow()
 
-        record = self._save_record_data(frame.data)
-        self._append_record_to_list(record)
+        self._save_record_data(frame.data)
+        self._reload_records_list()
         self.m_prj_modified = True
 
     def on_edit_record(self, event):
@@ -144,8 +144,8 @@ class FrameMain(wx.Frame):
             return
         frame.TransferDataFromWindow()
 
-        record = self._save_record_data(frame.data, record)
-        self._update_record_list_row(row, record)
+        self._save_record_data(frame.data, record)
+        self._reload_records_list()
         self.m_prj_modified = True
 
     def on_delete_record(self, event):
