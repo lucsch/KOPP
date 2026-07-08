@@ -70,6 +70,8 @@ class FrameRecord(wx.Dialog):
             ctrl.Bind(wx.EVT_TEXT, self.on_hr_value_changed)
 
         self.m_ctrl_btn_tag.Bind(wx.EVT_BUTTON, self.on_add_tag)
+        self.m_ctrl_btn_50.Bind(wx.EVT_BUTTON, self.on_add_50)
+        self.m_ctrl_btn_100.Bind(wx.EVT_BUTTON, self.on_add_100)
 
     def on_hr_value_changed(self, event):
         self._update_hr_total()
@@ -98,9 +100,13 @@ class FrameRecord(wx.Dialog):
 
         try:
             with self.data.database_handle.db.atomic():
-                tag = Tags.create(desc=tag_name)
+                tag, created = Tags.get_or_create(desc=tag_name)
         except Exception as exc:
             wx.MessageBox(_("Failed to create tag: {}").format(exc), _("Error"), wx.OK | wx.ICON_ERROR)
+            return
+
+        if not created:
+            wx.MessageBox(_("This tag already exists."), _("Info"), wx.OK | wx.ICON_INFORMATION)
             return
 
         self._add_tag_to_list(tag)
@@ -116,6 +122,19 @@ class FrameRecord(wx.Dialog):
             if self.m_ctrl_list_tags.IsChecked(index):
                 tag_ids.append(self.m_ctrl_list_tags.GetClientData(index))
         return tag_ids
+
+    def on_add_50(self, event):
+        min_done = TimeConverter.to_total_minutes(self.m_ctrl_hrd_h.GetValue(), self.m_ctrl_hrd_m.GetValue())
+        min_done = int(min_done * 0.5)
+        hours, minutes = TimeConverter.from_total_minutes(min_done)
+        self.m_ctrl_hri_h.SetValue(hours)
+        self.m_ctrl_hri_m.SetValue(minutes)
+        self.on_hr_value_changed(event)
+
+    def on_add_100(self, event):
+        self.m_ctrl_hri_h.SetValue(self.m_ctrl_hrd_h.GetValue())
+        self.m_ctrl_hri_m.SetValue(self.m_ctrl_hrd_m.GetValue())
+        self.on_hr_value_changed(event)
 
     def _create_controls(self):
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
