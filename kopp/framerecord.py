@@ -31,6 +31,7 @@ class FrameRecord(wx.Dialog):
         self._update_hr_total()
 
     def TransferDataToWindow(self):
+        self._load_tags()
         if self.data.date:
             self.m_ctrl_date.SetValue(self.data.date)
         hm = TimeConverter.from_total_minutes(self.data.hr_done)
@@ -100,7 +101,12 @@ class FrameRecord(wx.Dialog):
 
         try:
             with self.data.database_handle.db.atomic():
-                tag, created = Tags.get_or_create(desc=tag_name)
+                tag = Tags.select().where(Tags.desc == tag_name).first()
+                if tag:
+                    created = False
+                else:
+                    tag = Tags.create(desc=tag_name)
+                    created = True
         except Exception as exc:
             wx.MessageBox(_("Failed to create tag: {}").format(exc), _("Error"), wx.OK | wx.ICON_ERROR)
             return
@@ -115,6 +121,15 @@ class FrameRecord(wx.Dialog):
         index = self.m_ctrl_list_tags.Append(tag.desc)
         self.m_ctrl_list_tags.SetClientData(index, tag.id)
         self.m_ctrl_list_tags.Check(index, checked)
+
+    def _load_tags(self):
+        self.m_ctrl_list_tags.Clear()
+        if not self.data.database_handle:
+            return
+
+        selected_tags = set(self.data.tags_id)
+        for tag in Tags.select().order_by(Tags.desc):
+            self._add_tag_to_list(tag, tag.id in selected_tags)
 
     def get_checked_tag_ids(self):
         tag_ids = []

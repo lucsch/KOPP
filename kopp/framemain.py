@@ -1,5 +1,6 @@
 import gettext
 import os
+from datetime import date, datetime
 from pathlib import Path
 
 import wx
@@ -11,7 +12,9 @@ from kopp.frameinfo import FrameInfo
 from kopp.framemainlist import FrameMainListView
 from kopp.frameabout import FrameAbout
 from kopp.database import ProjectDatabase
+from kopp.database_model import Records, Tags, Tagsmix
 from kopp.framerecord import FrameRecord
+from kopp.timeconverter import TimeConverter
 
 from kopp.version import COMMIT_NUMBER
 from kopp.version import VERSION_MAJOR_MINOR
@@ -49,12 +52,14 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
         self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
         self.Bind(wx.EVT_CLOSE, self.on_close)
+        self.m_list.Bind(wx.dataview.EVT_DATAVIEW_ITEM_ACTIVATED, self.on_list_item_activated)
 
         # open a new project
         self.on_new_project(None)
 
     def on_new_project(self, event):
         self.m_prj_database.new_project()
+        self.m_list.DeleteAllItems()
         self.m_status_bar.SetStatusText(wx.EmptyString, 1)
         self.m_prj_modified = False
         self.m_prj_in_memory = True
@@ -74,6 +79,7 @@ class FrameMain(wx.Frame):
             wx.MessageBox(_("Failed to open project {}").format(filename), _("Error"), wx.OK | wx.ICON_ERROR)
             return
         self.m_status_bar.SetStatusText(filename, 1)
+        self._reload_records_list()
         self.m_prj_modified = False
         self.m_prj_in_memory = False
 
@@ -99,17 +105,171 @@ class FrameMain(wx.Frame):
     def on_add_record(self, event):
         frame = FrameRecord(self)
         frame.data.database_handle = self.m_prj_database.database
+        frame.TransferDataToWindow()
         if frame.ShowModal() == wx.ID_CANCEL:
             return
+        frame.TransferDataFromWindow()
 
+        record = self._save_record_data(frame.data)
+        self._append_record_to_list(record)
         self.m_prj_modified = True
-        # TODO: get the data from the frame and save it to the database
 
     def on_edit_record(self, event):
-        pass
+        selection = self._get_selected_record()
+        if not selection:
+            return
+
+        row, record = selection
+        frame = FrameRecord(self)
+        frame.data.database_handle = self.m_prj_database.database
+        frame.data.date = self._datetime_to_wx_date(record.date)
+        frame.data.hr_done = record.hr_base or 0
+        frame.data.hr_increased = record.hr_maj or 0
+        frame.data.a_total = record.annual or 0
+        frame.data.vac_total = record.vac or 0
+        frame.data.comment = record.comment or ""
+        frame.data.tags_id = [
+            tag_mix.tag.id
+            for tag_mix in Tagsmix.select(Tagsmix, Tags).join(Tags).where(Tagsmix.record == record)
+        ]
+        frame.TransferDataToWindow()
+
+        if frame.ShowModal() == wx.ID_CANCEL:
+            return
+        frame.TransferDataFromWindow()
+
+        record = self._save_record_data(frame.data, record)
+        self._update_record_list_row(row, record)
+        self.m_prj_modified = True
 
     def on_delete_record(self, event):
-        pass
+        selection = self._get_selected_record()
+        if not selection:
+            return
+
+        row, record = selection
+        with self.m_prj_database.database.db.atomic():
+            Tagsmix.delete().where(Tagsmix.record == record).execute()
+            record.delete_instance()
+
+        self.m_list.DeleteItem(row)
+        self.m_prj_modified = True
+
+    def on_list_item_activated(self, event):
+        self.on_edit_record(event)
+
+    def _get_selected_record(self):
+        if self.m_list.GetSelectedItemsCount() != 1:
+            wx.MessageBox(_("Select one record first."), _("Info"), wx.OK | wx.ICON_INFORMATION)
+            return None
+
+        row = self.m_list.GetSelectedRow()
+        if row == wx.NOT_FOUND:
+            wx.MessageBox(_("Select one record first."), _("Info"), wx.OK | wx.ICON_INFORMATION)
+            return None
+
+        record_id = self.m_list.GetItemData(self.m_list.RowToItem(row))
+        try:
+            return row, Records.get_by_id(record_id)
+        except Records.DoesNotExist:
+            wx.MessageBox(_("Selected record no longer exists."), _("Error"), wx.OK | wx.ICON_ERROR)
+            self.m_list.DeleteItem(row)
+            return None
+
+    def _save_record_data(self, data, record=None):
+        db_date = self._wx_date_to_datetime(data.date)
+        with self.m_prj_database.database.db.atomic():
+            if record is None:
+                record = Records.create(
+                    date=db_date,
+                    hr_base=data.hr_done,
+                    hr_maj=data.hr_increased,
+                    annual=data.a_total,
+                    vac=data.vac_total,
+                    comment=data.comment,
+                )
+            else:
+                record.date = db_date
+                record.hr_base = data.hr_done
+                record.hr_maj = data.hr_increased
+                record.annual = data.a_total
+                record.vac = data.vac_total
+                record.comment = data.comment
+                record.save()
+
+            Tagsmix.delete().where(Tagsmix.record == record).execute()
+            for tag_id in data.tags_id:
+                Tagsmix.get_or_create(record=record, tag=tag_id)
+
+        return record
+
+    def _reload_records_list(self):
+        self.m_list.DeleteAllItems()
+        for record in Records.select().order_by(Records.date, Records.record_id):
+            self._append_record_to_list(record)
+
+    def _append_record_to_list(self, record):
+        self.m_list.AppendItem(self._record_to_list_values(record), record.record_id)
+
+    def _update_record_list_row(self, row, record):
+        for column, value in enumerate(self._record_to_list_values(record)):
+            self.m_list.SetTextValue(value, row, column)
+        self.m_list.SetItemData(self.m_list.RowToItem(row), record.record_id)
+
+    def _record_to_list_values(self, record):
+        return [
+            self._format_record_date(record.date),
+            self._format_minutes((record.hr_base or 0) + (record.hr_maj or 0)),
+            self._format_minutes(record.annual or 0),
+            self._format_minutes(record.vac or 0),
+            self._format_record_tags(record),
+            record.comment or "",
+        ]
+
+    def _format_record_tags(self, record):
+        tags = (
+            Tags.select()
+            .join(Tagsmix)
+            .where(Tagsmix.record == record)
+            .order_by(Tags.desc)
+        )
+        return ", ".join(tag.desc for tag in tags)
+
+    def _format_minutes(self, total_minutes):
+        hours, minutes = TimeConverter.from_total_minutes(total_minutes)
+        return "{}:{:02d}".format(hours, minutes)
+
+    def _format_record_date(self, value):
+        value = self._date_to_datetime(value)
+        if not value:
+            return ""
+
+        weekdays = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+        return "{} {:02d}.{:02d}.{:02d}".format(
+            weekdays[value.weekday()],
+            value.day,
+            value.month,
+            value.year % 100,
+        )
+
+    def _wx_date_to_datetime(self, value):
+        return self._date_to_datetime(value)
+
+    def _date_to_datetime(self, value):
+        if isinstance(value, datetime):
+            return value
+        if isinstance(value, date):
+            return datetime(value.year, value.month, value.day)
+        if isinstance(value, wx.DateTime) and value.IsValid():
+            return datetime(value.GetYear(), value.GetMonth() + 1, value.GetDay())
+        return None
+
+    def _datetime_to_wx_date(self, value):
+        if isinstance(value, wx.DateTime):
+            return value
+        if isinstance(value, datetime):
+            return wx.DateTime.FromDMY(value.day, value.month - 1, value.year)
+        return None
 
     def on_about(self, event):
         frame = FrameAbout(self, program_name=PROG_NAME)

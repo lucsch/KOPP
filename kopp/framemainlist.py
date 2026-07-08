@@ -15,7 +15,7 @@ class MainListViewData:
         ("HR", 80),
         ("A", 80),
         ("VAC", 80),
-        ("Error", 150),
+        ("Tags", 150),
         ("Comment", 200),
     ])
 
