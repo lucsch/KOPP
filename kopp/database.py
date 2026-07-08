@@ -1,6 +1,6 @@
 #!/usr/bin/env/ python3
 
-from kopp.database_model import database_proxy, Errors, Records
+from kopp.database_model import database_proxy, Tags, Records, Tagsmix
 from peewee import *
 import os
 import sqlite3
@@ -17,29 +17,11 @@ class Database:
         database_proxy.initialize(db)
 
         db.connect()
-        db.create_tables([Errors, Records])
+        db.create_tables([Tags, Records, Tagsmix])
         self.db = db
 
     def close(self):
         self.db.close()
-
-    def add_error(self, error:Errors):
-        error.save()
-
-    def add_record(self, record:Records):
-        record.save()
-
-    def get_errors(self):
-        return Errors.select()
-
-    def get_records(self):
-        return Records.select()
-
-    def get_record_by_id(self, record_id:int):
-        return Records.get(Records.record_id == record_id)
-
-    def get_error_by_id(self, error_id:int):
-        return Errors.get(Errors.id == error_id)
 
 
 class ProjectDatabase:

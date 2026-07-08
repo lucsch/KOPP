@@ -10,25 +10,33 @@ class BaseModel(Model):
     class Meta:
         database = database_proxy
 
-# Definition of the 'errors' table
-class Errors(BaseModel):
-    id = IntegerField(primary_key=True)
-    desc = CharField(null=True)  # Equivalent to TEXT / VARCHAR
-
-    class Meta:
-        table_name = 'errors'
-
-# Definition of the 'records' table
+# Table 'records'
 class Records(BaseModel):
-    record_id = AutoField()  # AutoField automatically handles the INTEGER PRIMARY KEY AUTOINCREMENT
-    date = DateTimeField(null=True)  # Peewee will automatically convert Python datetime objects to TEXT for SQLite
+    record_id = AutoField()  # Handled as INTEGER PRIMARY KEY AUTOINCREMENT
+    date = DateTimeField(null=True)
     hr_base = IntegerField(null=True)
     hr_maj = IntegerField(null=True)
     annual = IntegerField(null=True)
     vac = IntegerField(null=True)
-    # Definition of the foreign key to the Errors table
-    error = ForeignKeyField(Errors, backref='records', column_name='error_id', field='id', null=True)
     comment = CharField(null=True)
 
     class Meta:
         table_name = 'records'
+
+# Table 'tags'
+class Tags(BaseModel):
+    id = AutoField()  # Handled as INTEGER PRIMARY KEY AUTOINCREMENT
+    desc = CharField(null=True)
+
+    class Meta:
+        table_name = 'tags'
+
+# Table 'tagsmix' (Junction table for Many-to-Many relationship)
+class Tagsmix(BaseModel):
+    record = ForeignKeyField(Records, backref='tags_mix', column_name='record_id', field='record_id')
+    tag = ForeignKeyField(Tags, backref='records_mix', column_name='tag_id', field='id')
+
+    class Meta:
+        table_name = 'tagsmix'
+        # Creates a composite primary key to avoid duplicate record-tag pairs
+        primary_key = CompositeKey('record', 'tag')

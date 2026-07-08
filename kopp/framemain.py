@@ -11,6 +11,7 @@ from kopp.frameinfo import FrameInfo
 from kopp.framemainlist import FrameMainListView
 from kopp.frameabout import FrameAbout
 from kopp.database import ProjectDatabase
+from kopp.framerecord import FrameRecord
 
 from kopp.version import COMMIT_NUMBER
 from kopp.version import VERSION_MAJOR_MINOR
@@ -41,6 +42,7 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_new_project, id=self.m_menui_file_new.GetId())
         self.Bind(wx.EVT_MENU, self.on_open_project, id=self.m_menui_file_open.GetId())
         self.Bind(wx.EVT_MENU, self.on_save_project, id=self.m_menui_file_save.GetId())
+        self.Bind(wx.EVT_MENU, self.on_add_record, id=self.m_menui_rec_add.GetId())
         self.Bind(wx.EVT_MENU, self.on_view_info, id=self.m_menu_view_info.GetId())
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
         self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
@@ -91,6 +93,10 @@ class FrameMain(wx.Frame):
                 wx.MessageBox(_("Failed to save project {}").format(filename), _("Error"), wx.OK | wx.ICON_ERROR)
                 return
             self.open_project(filename)
+
+    def on_add_record(self, event):
+        frame = FrameRecord(self)
+        frame.ShowModal()
 
     def on_about(self, event):
         frame = FrameAbout(self, program_name=PROG_NAME)
