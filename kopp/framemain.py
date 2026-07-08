@@ -97,6 +97,12 @@ class FrameMain(wx.Frame):
             if fileDialog.ShowModal() != wx.ID_OK:
                 return
             filename = fileDialog.GetPath()
+
+            # do not save the project on the same file (endless loop)
+            if self.m_prj_database.database_filename == filename:
+                wx.LogMessage(_("Project already saved to {}").format(filename))
+                return
+
             if not self.m_prj_database.save_project(filename):
                 wx.MessageBox(_("Failed to save project {}").format(filename), _("Error"), wx.OK | wx.ICON_ERROR)
                 return
@@ -236,8 +242,12 @@ class FrameMain(wx.Frame):
         return ", ".join(tag.desc for tag in tags)
 
     def _format_minutes(self, total_minutes):
-        hours, minutes = TimeConverter.from_total_minutes(total_minutes)
-        return "{}:{:02d}".format(hours, minutes)
+        if total_minutes == 0:
+            return ""
+
+        sign = "-" if total_minutes < 0 else ""
+        hours, minutes = TimeConverter.from_total_minutes(abs(total_minutes))
+        return "{}{}:{:02d}".format(sign, hours, minutes)
 
     def _format_record_date(self, value):
         value = self._date_to_datetime(value)

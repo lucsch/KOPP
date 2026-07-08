@@ -188,7 +188,7 @@ class FrameRecord(wx.Dialog):
         fgSizer1.Add(self.m_staticText2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_hrd_h = wx.SpinCtrl(sbSizer1.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 1000, 0)
+                                        wx.DefaultSize, wx.SP_ARROW_KEYS, -1000, 1000, 0)
         fgSizer1.Add(self.m_ctrl_hrd_h, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         self.m_staticText3 = wx.StaticText(sbSizer1.GetStaticBox(), wx.ID_ANY, _(u":"), wx.DefaultPosition,
@@ -198,7 +198,7 @@ class FrameRecord(wx.Dialog):
         fgSizer1.Add(self.m_staticText3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_hrd_m = wx.SpinCtrl(sbSizer1.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 59, 0)
+                                        wx.DefaultSize, wx.SP_ARROW_KEYS, -59, 59, 0)
         fgSizer1.Add(self.m_ctrl_hrd_m, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         fgSizer1.Add((0, 0), 1, wx.EXPAND, 5)
@@ -220,7 +220,7 @@ class FrameRecord(wx.Dialog):
         fgSizer1.Add(self.m_staticText4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_hri_h = wx.SpinCtrl(sbSizer1.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 1000, 0)
+                                        wx.DefaultSize, wx.SP_ARROW_KEYS, -1000, 1000, 0)
         fgSizer1.Add(self.m_ctrl_hri_h, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         self.m_staticText5 = wx.StaticText(sbSizer1.GetStaticBox(), wx.ID_ANY, _(u":"), wx.DefaultPosition,
@@ -230,7 +230,7 @@ class FrameRecord(wx.Dialog):
         fgSizer1.Add(self.m_staticText5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_hri_m = wx.SpinCtrl(sbSizer1.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 59, 0)
+                                        wx.DefaultSize, wx.SP_ARROW_KEYS, -59, 59, 0)
         fgSizer1.Add(self.m_ctrl_hri_m, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         self.m_staticText7 = wx.StaticText(sbSizer1.GetStaticBox(), wx.ID_ANY, _(u"HR Total (H:M) :"),
@@ -272,7 +272,7 @@ class FrameRecord(wx.Dialog):
         fgSizer2.Add(self.m_staticText9, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_a_h = wx.SpinCtrl(sbSizer2.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                      wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 1000, 0)
+                                      wx.DefaultSize, wx.SP_ARROW_KEYS, -1000, 1000, 0)
         fgSizer2.Add(self.m_ctrl_a_h, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         self.m_staticText10 = wx.StaticText(sbSizer2.GetStaticBox(), wx.ID_ANY, _(u":"), wx.DefaultPosition,
@@ -282,7 +282,7 @@ class FrameRecord(wx.Dialog):
         fgSizer2.Add(self.m_staticText10, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_a_m = wx.SpinCtrl(sbSizer2.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                      wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 59, 0)
+                                      wx.DefaultSize, wx.SP_ARROW_KEYS, -59, 59, 0)
         fgSizer2.Add(self.m_ctrl_a_m, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         sbSizer2.Add(fgSizer2, 1, wx.EXPAND, 5)
@@ -304,7 +304,7 @@ class FrameRecord(wx.Dialog):
         fgSizer21.Add(self.m_staticText91, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_vac_h = wx.SpinCtrl(sbSizer21.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 1000, 0)
+                                        wx.DefaultSize, wx.SP_ARROW_KEYS, -1000, 1000, 0)
         fgSizer21.Add(self.m_ctrl_vac_h, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         self.m_staticText101 = wx.StaticText(sbSizer21.GetStaticBox(), wx.ID_ANY, _(u":"), wx.DefaultPosition,
@@ -314,7 +314,7 @@ class FrameRecord(wx.Dialog):
         fgSizer21.Add(self.m_staticText101, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_vac_m = wx.SpinCtrl(sbSizer21.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 59, 0)
+                                        wx.DefaultSize, wx.SP_ARROW_KEYS, -59, 59, 0)
         fgSizer21.Add(self.m_ctrl_vac_m, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         sbSizer21.Add(fgSizer21, 1, wx.EXPAND, 5)

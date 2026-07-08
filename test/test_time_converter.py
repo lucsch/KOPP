@@ -9,7 +9,9 @@ from kopp.timeconverter import TimeConverter
         (0, 0, 0),
         (0, 45, 45),
         (1, 0, 60),
+        (1, -30, 30),
         (2, 30, 150),
+        (-2, -30, -150),
         (100, 59, 6059),
     ],
 )
@@ -24,6 +26,8 @@ def test_to_total_minutes(hours, minutes, expected):
         (45, (0, 45)),
         (60, (1, 0)),
         (150, (2, 30)),
+        (-30, (0, -30)),
+        (-150, (-2, -30)),
         (6059, (100, 59)),
     ],
 )
@@ -34,9 +38,8 @@ def test_from_total_minutes(total_minutes, expected):
 @pytest.mark.parametrize(
     ("hours", "minutes"),
     [
-        (-1, 0),
-        (0, -1),
         (0, 60),
+        (0, -60),
     ],
 )
 def test_to_total_minutes_rejects_invalid_values(hours, minutes):
@@ -54,12 +57,6 @@ def test_to_total_minutes_rejects_invalid_values(hours, minutes):
 def test_to_total_minutes_rejects_non_integers(hours, minutes):
     with pytest.raises(TypeError):
         TimeConverter.to_total_minutes(hours, minutes)
-
-
-def test_from_total_minutes_rejects_negative_value():
-    with pytest.raises(ValueError):
-        TimeConverter.from_total_minutes(-1)
-
 
 @pytest.mark.parametrize("total_minutes", [1.5, "90"])
 def test_from_total_minutes_rejects_non_integer(total_minutes):
