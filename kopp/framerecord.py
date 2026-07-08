@@ -3,6 +3,7 @@ import wx
 import wx.adv
 import gettext
 
+from kopp.database_model import Tags
 from kopp.timeconverter import TimeConverter
 
 _ = gettext.gettext
@@ -26,6 +27,8 @@ class FrameRecord(wx.Dialog):
                            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.data = FrameRecordData()
         self._create_controls()
+        self._bind_events()
+        self._update_hr_total()
 
     def TransferDataToWindow(self):
         if self.data.date:
@@ -36,6 +39,7 @@ class FrameRecord(wx.Dialog):
         hm = TimeConverter.from_total_minutes(self.data.hr_increased)
         self.m_ctrl_hri_h.SetValue(hm[0])
         self.m_ctrl_hri_m.SetValue(hm[1])
+        self._update_hr_total()
         hm = TimeConverter.from_total_minutes(self.data.a_total)
         self.m_ctrl_a_h.SetValue(hm[0])
         self.m_ctrl_a_m.SetValue(hm[1])
@@ -52,7 +56,66 @@ class FrameRecord(wx.Dialog):
         self.data.a_total = TimeConverter.to_total_minutes(self.m_ctrl_a_h.GetValue(), self.m_ctrl_a_m.GetValue())
         self.data.vac_total = TimeConverter.to_total_minutes(self.m_ctrl_vac_h.GetValue(), self.m_ctrl_vac_m.GetValue())
         self.data.comment = self.m_ctrl_comment.GetValue()
+        self.data.tags_id = self.get_checked_tag_ids()
         return True
+
+    def _bind_events(self):
+        for ctrl in (
+            self.m_ctrl_hrd_h,
+            self.m_ctrl_hrd_m,
+            self.m_ctrl_hri_h,
+            self.m_ctrl_hri_m,
+        ):
+            ctrl.Bind(wx.EVT_SPINCTRL, self.on_hr_value_changed)
+            ctrl.Bind(wx.EVT_TEXT, self.on_hr_value_changed)
+
+        self.m_ctrl_btn_tag.Bind(wx.EVT_BUTTON, self.on_add_tag)
+
+    def on_hr_value_changed(self, event):
+        self._update_hr_total()
+        event.Skip()
+
+    def _update_hr_total(self):
+        hr_done = TimeConverter.to_total_minutes(self.m_ctrl_hrd_h.GetValue(), self.m_ctrl_hrd_m.GetValue())
+        hr_increased = TimeConverter.to_total_minutes(self.m_ctrl_hri_h.GetValue(), self.m_ctrl_hri_m.GetValue())
+        hours, minutes = TimeConverter.from_total_minutes(hr_done + hr_increased)
+
+        self.m_ctrl_hrtot_h.ChangeValue(str(hours))
+        self.m_ctrl_hrtot_m.ChangeValue(str(minutes))
+
+    def on_add_tag(self, event):
+        if not self.data.database_handle:
+            wx.MessageBox(_("No database is open."), _("Error"), wx.OK | wx.ICON_ERROR)
+            return
+
+        with wx.TextEntryDialog(self, _("Tag name:"), _("Add tag")) as dlg:
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+
+            tag_name = dlg.GetValue().strip()
+            if not tag_name:
+                return
+
+        try:
+            with self.data.database_handle.db.atomic():
+                tag = Tags.create(desc=tag_name)
+        except Exception as exc:
+            wx.MessageBox(_("Failed to create tag: {}").format(exc), _("Error"), wx.OK | wx.ICON_ERROR)
+            return
+
+        self._add_tag_to_list(tag)
+
+    def _add_tag_to_list(self, tag, checked=True):
+        index = self.m_ctrl_list_tags.Append(tag.desc)
+        self.m_ctrl_list_tags.SetClientData(index, tag.id)
+        self.m_ctrl_list_tags.Check(index, checked)
+
+    def get_checked_tag_ids(self):
+        tag_ids = []
+        for index in range(self.m_ctrl_list_tags.GetCount()):
+            if self.m_ctrl_list_tags.IsChecked(index):
+                tag_ids.append(self.m_ctrl_list_tags.GetClientData(index))
+        return tag_ids
 
     def _create_controls(self):
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
@@ -101,7 +164,7 @@ class FrameRecord(wx.Dialog):
         fgSizer1.Add(self.m_staticText3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_hrd_m = wx.SpinCtrl(sbSizer1.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 60, 0)
+                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 59, 0)
         fgSizer1.Add(self.m_ctrl_hrd_m, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         fgSizer1.Add((0, 0), 1, wx.EXPAND, 5)
@@ -133,7 +196,7 @@ class FrameRecord(wx.Dialog):
         fgSizer1.Add(self.m_staticText5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_hri_m = wx.SpinCtrl(sbSizer1.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 1000, 0)
+                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 59, 0)
         fgSizer1.Add(self.m_ctrl_hri_m, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         self.m_staticText7 = wx.StaticText(sbSizer1.GetStaticBox(), wx.ID_ANY, _(u"HR Total (H:M) :"),
@@ -185,7 +248,7 @@ class FrameRecord(wx.Dialog):
         fgSizer2.Add(self.m_staticText10, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_a_m = wx.SpinCtrl(sbSizer2.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                      wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 60, 0)
+                                      wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 59, 0)
         fgSizer2.Add(self.m_ctrl_a_m, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         sbSizer2.Add(fgSizer2, 1, wx.EXPAND, 5)
@@ -217,7 +280,7 @@ class FrameRecord(wx.Dialog):
         fgSizer21.Add(self.m_staticText101, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_vac_m = wx.SpinCtrl(sbSizer21.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
-                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 60, 0)
+                                        wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 59, 0)
         fgSizer21.Add(self.m_ctrl_vac_m, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
 
         sbSizer21.Add(fgSizer21, 1, wx.EXPAND, 5)

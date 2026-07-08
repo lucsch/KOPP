@@ -1,6 +1,6 @@
 import pytest
 
-from kopp.time_converter import TimeConverter
+from kopp.timeconverter import TimeConverter
 
 
 @pytest.mark.parametrize(

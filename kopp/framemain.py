@@ -96,9 +96,12 @@ class FrameMain(wx.Frame):
 
     def on_add_record(self, event):
         frame = FrameRecord(self)
+        frame.data.database_handle = self.m_prj_database.database
         if frame.ShowModal() == wx.ID_CANCEL:
             return
-        print (frame.data.date, frame.data.hr_done, frame.data.hr_increased, frame.data.a_total, frame.data.vac_total, frame.data.comment)
+
+        self.m_prj_modified = True
+        # TODO: get the data from the frame and save it to the database
 
     def on_about(self, event):
         frame = FrameAbout(self, program_name=PROG_NAME)
