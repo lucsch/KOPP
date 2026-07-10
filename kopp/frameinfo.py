@@ -1,13 +1,26 @@
 import wx
 import wx.html
+import os
+import sys
+from jinja2 import Environment, FileSystemLoader
+
+from kopp.record_totals import RecordTotals
 
 class FrameInfo(wx.Panel):
     """Dockable information panel for the main frame."""
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent, id=wx.ID_ANY)
+
+        self.record_data_selected = RecordTotals()
+        self.record_data_selected_text = "Nothing selected"
+        self.record_data_total = RecordTotals()
+        self.record_data_total_text = "All records"
+
+        self.html_template = self._load_html_template()
+
         self._create_controls()
-        self._create_dummy_html()
+        self.update_html()
 
     def _create_controls(self):
         bSizer2 = wx.BoxSizer(wx.VERTICAL)
@@ -18,6 +31,24 @@ class FrameInfo(wx.Panel):
 
         self.SetSizer(bSizer2)
         self.Layout()
+
+    def _load_html_template(self):
+        """load the html template in memory from the templates folder"""
+        if getattr(sys, 'frozen', False): # if frozen with pyinstaller, MEIPASS is set
+            base_folder = sys._MEIPASS
+        else:
+            base_folder = os.path.dirname(os.path.abspath(__file__))
+
+        template_folder = os.path.join(base_folder, 'templates')
+        env = Environment(loader=FileSystemLoader(template_folder))
+        return env.get_template('info.html')
+
+    def update_html(self):
+        html_final = self.html_template.render(record_data_selected_text=self.record_data_selected_text,
+                                  record_data_selected=self.record_data_selected,
+                                  record_data_total_text=self.record_data_total_text,
+                                  record_data_total=self.record_data_total)
+        self.m_ctrl_html.SetPage(html_final)
 
     def _create_dummy_html(self):
         # Vos variables de données (exemples)

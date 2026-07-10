@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>{{ record_data_selected_text }}</h1>
+<table>
+    <tbody>
+    <tr>
+        <td>HR done</td>
+        <td>{{ record_data_selected.hr_base }}</td>
+    </tr>
+    <tr>
+        <td>HR maj</td>
+        <td>{{ record_data_selected.hr_maj }}</td>
+    </tr>
+    <tr>
+        <td>HR total</td>
+        <td>{{ record_data_selected.hr_base + record_data_selected.hr_maj }}</td>
+    </tr>
+    <tr>
+        <td>A</td>
+        <td>{{ record_data_selected.annual }}</td>
+    </tr>
+    <tr>
+        <td>VAC</td>
+        <td>{{ record_data_selected.vac }}</td>
+    </tr>
+    </tbody>
+</table>
+
+
+<h1> {{ record_data_total_text }}</h1>
+<table>
+    <tbody>
+    <tr>
+        <td>HR done</td>
+        <td>{{ record_data_total.hr_base }}</td>
+    </tr>
+    <tr>
+        <td>HR maj</td>
+        <td>{{ record_data_total.hr_maj }}</td>
+    </tr>
+    <tr>
+        <td>HR total</td>
+        <td>{{ record_data_total.hr_base + record_data_total.hr_maj }}</td>
+    </tr>
+    <tr>
+        <td>A</td>
+        <td>{{ record_data_total.annual }}</td>
+    </tr>
+    <tr>
+        <td>VAC</td>
+        <td>{{ record_data_total.vac }}</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
