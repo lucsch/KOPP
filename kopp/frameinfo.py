@@ -1,10 +1,28 @@
+from dataclasses import dataclass
+
 import wx
 import wx.html
 import os
 import sys
 from jinja2 import Environment, FileSystemLoader
+from kopp.timeconverter import TimeConverter
 
 from kopp.record_totals import RecordTotals
+
+@dataclass
+class InfoData:
+    title: str = ""
+    hr_done_hours: int = 0
+    hr_done_minutes: int = 0
+    hr_increased_hours: int = 0
+    hr_increased_minutes: int = 0
+    hr_total_hours: int = 0
+    hr_total_minutes: int = 0
+    a_hours: int = 0
+    a_minutes: int = 0
+    vac_hours: int = 0
+    vac_minutes: int = 0
+
 
 class FrameInfo(wx.Panel):
     """Dockable information panel for the main frame."""
@@ -12,15 +30,29 @@ class FrameInfo(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent, id=wx.ID_ANY)
 
-        self.record_data_selected = RecordTotals()
-        self.record_data_selected_text = "Nothing selected"
-        self.record_data_total = RecordTotals()
-        self.record_data_total_text = "All records"
+        self.info_selected = InfoData()
+        self.info_total = InfoData()
 
         self.html_template = self._load_html_template()
 
         self._create_controls()
-        self.update_html()
+        self._update_html()
+
+    def _convert_record_to_info(self, record: RecordTotals, title: str) -> InfoData:
+        info = InfoData(title=title)
+        if record is not None:
+            info.hr_done_hours, info.hr_done_minutes = TimeConverter.from_total_minutes(record.hr_base)
+            info.hr_increased_hours, info.hr_increased_minutes = TimeConverter.from_total_minutes(record.hr_maj)
+            info.hr_total_hours, info.hr_total_minutes = TimeConverter.from_total_minutes(record.hr_base + record.hr_maj)
+            info.a_hours, info.a_minutes = TimeConverter.from_total_minutes(record.annual)
+            info.vac_hours, info.vac_minutes = TimeConverter.from_total_minutes(record.vac)
+        return info
+
+    def update_data(self, record_data_selected: RecordTotals, record_data_selected_txt: str, record_data_total: RecordTotals):
+        # Update the info data for the selected records
+        self.info_selected = self._convert_record_to_info(record_data_selected, record_data_selected_txt)
+        self.info_total = self._convert_record_to_info(record_data_total, "Total Records")
+        self._update_html()
 
     def _create_controls(self):
         bSizer2 = wx.BoxSizer(wx.VERTICAL)
@@ -43,11 +75,9 @@ class FrameInfo(wx.Panel):
         env = Environment(loader=FileSystemLoader(template_folder))
         return env.get_template('info.html')
 
-    def update_html(self):
-        html_final = self.html_template.render(record_data_selected_text=self.record_data_selected_text,
-                                  record_data_selected=self.record_data_selected,
-                                  record_data_total_text=self.record_data_total_text,
-                                  record_data_total=self.record_data_total)
+    def _update_html(self):
+        html_final = self.html_template.render(info_selected=self.info_selected,
+                                  info_total=self.info_total)
         self.m_ctrl_html.SetPage(html_final)
 
     def _create_dummy_html(self):
