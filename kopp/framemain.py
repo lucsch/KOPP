@@ -14,6 +14,7 @@ from kopp.frameabout import FrameAbout
 from kopp.database import ProjectDatabase
 from kopp.database_model import Records, Tags, Tagsmix
 from kopp.framerecord import FrameRecord
+from kopp.record_totals import RecordTotals, RecordTotalsCalculator
 from kopp.timeconverter import TimeConverter
 
 from kopp.version import COMMIT_NUMBER
@@ -53,6 +54,7 @@ class FrameMain(wx.Frame):
         self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
         self.Bind(wx.EVT_CLOSE, self.on_close)
         self.m_list.Bind(wx.dataview.EVT_DATAVIEW_ITEM_ACTIVATED, self.on_list_item_activated)
+        self.m_list.Bind(wx.dataview.EVT_DATAVIEW_SELECTION_CHANGED, self.on_list_selection_changed)
 
         # open a new project
         self.on_new_project(None)
@@ -60,6 +62,7 @@ class FrameMain(wx.Frame):
     def on_new_project(self, event):
         self.m_prj_database.new_project()
         self.m_list.DeleteAllItems()
+        self._update_info_window()
         self.m_status_bar.SetStatusText(wx.EmptyString, 1)
         self.m_prj_modified = False
         self.m_prj_in_memory = True
@@ -80,6 +83,7 @@ class FrameMain(wx.Frame):
             return
         self.m_status_bar.SetStatusText(filename, 1)
         self._reload_records_list()
+        self._update_info_window()
         self.m_prj_modified = False
         self.m_prj_in_memory = False
 
@@ -118,6 +122,7 @@ class FrameMain(wx.Frame):
 
         self._save_record_data(frame.data)
         self._reload_records_list()
+        self._update_info_window()
         self.m_prj_modified = True
 
     def on_edit_record(self, event):
@@ -146,6 +151,7 @@ class FrameMain(wx.Frame):
 
         self._save_record_data(frame.data, record)
         self._reload_records_list()
+        self._update_info_window()
         self.m_prj_modified = True
 
     def on_delete_record(self, event):
@@ -159,28 +165,53 @@ class FrameMain(wx.Frame):
             record.delete_instance()
 
         self.m_list.DeleteItem(row)
+        self._update_info_window()
         self.m_prj_modified = True
 
     def on_list_item_activated(self, event):
         self.on_edit_record(event)
 
-    def _get_selected_record(self):
+    def on_list_selection_changed(self, event):
+        self._update_info_window()
+        event.Skip()
+
+    def _get_selected_record(self, show_message=True):
         if self.m_list.GetSelectedItemsCount() != 1:
-            wx.MessageBox(_("Select one record first."), _("Info"), wx.OK | wx.ICON_INFORMATION)
+            if show_message:
+                wx.MessageBox(_("Select one record first."), _("Info"), wx.OK | wx.ICON_INFORMATION)
             return None
 
         row = self.m_list.GetSelectedRow()
         if row == wx.NOT_FOUND:
-            wx.MessageBox(_("Select one record first."), _("Info"), wx.OK | wx.ICON_INFORMATION)
+            if show_message:
+                wx.MessageBox(_("Select one record first."), _("Info"), wx.OK | wx.ICON_INFORMATION)
             return None
 
         record_id = self.m_list.GetItemData(self.m_list.RowToItem(row))
         try:
             return row, Records.get_by_id(record_id)
         except Records.DoesNotExist:
-            wx.MessageBox(_("Selected record no longer exists."), _("Error"), wx.OK | wx.ICON_ERROR)
+            if show_message:
+                wx.MessageBox(_("Selected record no longer exists."), _("Error"), wx.OK | wx.ICON_ERROR)
             self.m_list.DeleteItem(row)
             return None
+
+    def _update_info_window(self):
+        if not self.m_prj_database.database:
+            self.m_info.update_data(RecordTotals(), _("Selection"), RecordTotals())
+            return
+
+        total = RecordTotalsCalculator.all()
+        selection = self._get_selected_record(show_message=False)
+        if selection:
+            row, record = selection
+            selected = RecordTotalsCalculator.until_record_id(record.record_id)
+            selected_title = self._format_record_date(record.date)
+        else:
+            selected = RecordTotals()
+            selected_title = _("Selection")
+
+        self.m_info.update_data(selected, selected_title, total)
 
     def _save_record_data(self, data, record=None):
         db_date = self._wx_date_to_datetime(data.date)
