@@ -170,12 +170,6 @@
             <property name="shortcut">Ctrl+O</property>
             <property name="unchecked_bitmap"></property>
           </object>
-          <object class="submenu" expanded="true">
-            <property name="bitmap"></property>
-            <property name="label">Recent</property>
-            <property name="name">m_menu_file_recent</property>
-            <property name="permission">protected</property>
-          </object>
           <object class="wxMenuItem" expanded="true">
             <property name="bitmap"></property>
             <property name="checked">0</property>
@@ -191,6 +185,23 @@
           </object>
           <object class="separator" expanded="true">
             <property name="name">m_separator1</property>
+            <property name="permission">none</property>
+          </object>
+          <object class="wxMenuItem" expanded="true">
+            <property name="bitmap"></property>
+            <property name="checked">0</property>
+            <property name="enabled">1</property>
+            <property name="help"></property>
+            <property name="id">wxID_ANY</property>
+            <property name="kind">wxITEM_NORMAL</property>
+            <property name="label">Settings...</property>
+            <property name="name">m_menui_settings</property>
+            <property name="permission">none</property>
+            <property name="shortcut">Ctrl+,</property>
+            <property name="unchecked_bitmap"></property>
+          </object>
+          <object class="separator" expanded="true">
+            <property name="name">m_separator2</property>
             <property name="permission">none</property>
           </object>
           <object class="wxMenuItem" expanded="true">
@@ -234,7 +245,7 @@
             <property name="label">Delete</property>
             <property name="name">m_menui_rec_delete</property>
             <property name="permission">none</property>
-            <property name="shortcut">DEL</property>
+            <property name="shortcut"></property>
             <property name="unchecked_bitmap"></property>
           </object>
           <object class="wxMenuItem" expanded="true">

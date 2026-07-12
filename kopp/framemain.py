@@ -51,6 +51,7 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_delete_record, id=self.m_menui_rec_delete.GetId())
         self.Bind(wx.EVT_MENU, self.on_view_info, id=self.m_menu_view_info.GetId())
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
+        self.Bind(wx.EVT_MENU, self.on_website, id=self.m_menui_help_web.GetId())
         self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
         self.Bind(wx.EVT_CLOSE, self.on_close)
         self.m_list.Bind(wx.dataview.EVT_DATAVIEW_ITEM_ACTIVATED, self.on_list_item_activated)
@@ -316,6 +317,9 @@ class FrameMain(wx.Frame):
         frame = FrameAbout(self, program_name=PROG_NAME)
         frame.Show()
 
+    def on_website(self, event):
+        wx.LaunchDefaultBrowser("https://github.com/lucsch/KOPP")
+
     def on_view_info(self, event):
         pane = self.m_aui_manager.GetPane(self.m_info)
         pane.Show(event.IsChecked())
@@ -340,12 +344,15 @@ class FrameMain(wx.Frame):
                                              wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_file.Append(self.m_menui_file_open)
 
-        self.m_menu_file_recent = wx.Menu()
-        self.m_menu_file.AppendSubMenu(self.m_menu_file_recent, _(u"Recent"))
-
         self.m_menui_file_save = wx.MenuItem(self.m_menu_file, wx.ID_ANY, _(u"Save as...") + u"\t" + u"Ctrl+S",
                                              wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_file.Append(self.m_menui_file_save)
+
+        self.m_menu_file.AppendSeparator()
+
+        self.m_menui_settings = wx.MenuItem(self.m_menu_file, wx.ID_ANY, _(u"Settings...") + u"\t" + u"Ctrl+,",
+                                            wx.EmptyString, wx.ITEM_NORMAL)
+        self.m_menu_file.Append(self.m_menui_settings)
 
         self.m_menu_file.AppendSeparator()
 
@@ -359,8 +366,7 @@ class FrameMain(wx.Frame):
                                            wx.ITEM_NORMAL)
         self.m_menu_rec.Append(self.m_menui_rec_add)
 
-        self.m_menui_rec_delete = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _(u"Delete") + u"\t" + u"DEL", wx.EmptyString,
-                                              wx.ITEM_NORMAL)
+        self.m_menui_rec_delete = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _(u"Delete"), wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_rec.Append(self.m_menui_rec_delete)
 
         self.m_menui_rec_edit = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _(u"Edit...") + u"\t" + u"ENTER",
