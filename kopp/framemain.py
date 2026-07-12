@@ -11,6 +11,7 @@ import wx.svg
 from kopp.frameinfo import FrameInfo
 from kopp.framemainlist import FrameMainListView
 from kopp.frameabout import FrameAbout
+from kopp.framesettings import FrameSettings
 from kopp.database import ProjectDatabase
 from kopp.database_model import Records, Tags, Tagsmix
 from kopp.framerecord import FrameRecord
@@ -42,6 +43,7 @@ class FrameMain(wx.Frame):
         self.m_prj_database = ProjectDatabase()
         self.m_prj_modified = False
         self.m_prj_in_memory = False
+        self.m_config = wx.FileConfig(PROG_NAME)
 
         self.Bind(wx.EVT_MENU, self.on_new_project, id=self.m_menui_file_new.GetId())
         self.Bind(wx.EVT_MENU, self.on_open_project, id=self.m_menui_file_open.GetId())
@@ -52,13 +54,18 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_view_info, id=self.m_menu_view_info.GetId())
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
         self.Bind(wx.EVT_MENU, self.on_website, id=self.m_menui_help_web.GetId())
+        self.Bind(wx.EVT_MENU, self.on_settings, id=self.m_menui_settings.GetId())
         self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
         self.Bind(wx.EVT_CLOSE, self.on_close)
         self.m_list.Bind(wx.dataview.EVT_DATAVIEW_ITEM_ACTIVATED, self.on_list_item_activated)
         self.m_list.Bind(wx.dataview.EVT_DATAVIEW_SELECTION_CHANGED, self.on_list_selection_changed)
 
-        # open a new project
-        self.on_new_project(None)
+        # open a new project or load the last one depending on the config
+        auto_load_project = self.m_config.Read("auto_load_project", "")
+        if auto_load_project != "" and os.path.exists(auto_load_project):
+            self.open_project(auto_load_project)
+        else:
+            self.on_new_project(None)
 
     def on_new_project(self, event):
         self.m_prj_database.new_project()
@@ -319,6 +326,12 @@ class FrameMain(wx.Frame):
 
     def on_website(self, event):
         wx.LaunchDefaultBrowser("https://github.com/lucsch/KOPP")
+
+    def on_settings(self, event):
+        frame = FrameSettings(self)
+        if frame.ShowModal() != wx.ID_OK:
+            return
+        self.m_config.Write("auto_load_project", frame.m_ctrl_filepicker.GetPath())
 
     def on_view_info(self, event):
         pane = self.m_aui_manager.GetPane(self.m_info)
