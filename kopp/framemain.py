@@ -1,7 +1,6 @@
 import gettext
 import os
 from datetime import date, datetime
-from pathlib import Path
 
 import wx
 import wx.aui
