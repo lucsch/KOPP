@@ -29,8 +29,13 @@ jobs:
           uv sync --group dev
           --no-install-package wxpython
 
+      - name: Install wxPython wheel
+        run: >
+          uv pip install
+          https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-24.04/wxpython-4.2.5-cp314-cp314-linux_x86_64.whl
+
       - name: Run ruff
-        run: uv run ruff check .
+        run: uv run --no-sync ruff check .
 
       - name: Run unit tests
-        run: uv run pytest
+        run: uv run --no-sync pytest
