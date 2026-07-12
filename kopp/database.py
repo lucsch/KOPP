@@ -4,7 +4,6 @@ from kopp.database_model import database_proxy, Tags, Records, Tagsmix
 from peewee import SqliteDatabase
 import os
 import sqlite3
-import wx
 
 class Database:
     def __init__(self, database_filename:str):
@@ -52,6 +51,8 @@ class ProjectDatabase:
 
     def save_project(self, database_filename:str) -> bool:
         """Open a direct sqlite connection to the database file and copy the database to the file"""
+        import wx
+
         if not self.database:
             wx.LogError("No database to save")
             return False

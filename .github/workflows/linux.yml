@@ -27,8 +27,7 @@ jobs:
       - name: Install dependencies
         run: >
           uv sync --group dev
-          --find-links https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-24.04/
-          --no-build-package wxPython
+          --no-install-package wxpython
 
       - name: Run ruff
         run: uv run ruff check .
