@@ -1,0 +1,54 @@
+name: macOS
+
+on:
+  push:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build macOS app
+    runs-on: macos-latest
+    env:
+      UV_PYTHON: "3.14"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install Python
+        run: uv python install 3.14
+
+      - name: Install dependencies
+        run: uv sync --no-dev
+
+      - name: Build app
+        run: uv run python install/createapp.py OSX
+
+      - name: Package app
+        run: |
+          mkdir -p artifacts
+          cd bin/dist
+          zip -r ../../artifacts/kopp-macos.zip .
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kopp-macos
+          path: artifacts/kopp-macos.zip
+
+      - name: Upload release artifact
+        if: github.event_name == 'release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" artifacts/kopp-macos.zip --clobber
