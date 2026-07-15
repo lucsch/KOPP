@@ -327,10 +327,12 @@ class FrameMain(wx.Frame):
         wx.LaunchDefaultBrowser("https://github.com/lucsch/KOPP")
 
     def on_settings(self, event):
+        my_auto_load_project_path = self.m_config.Read("auto_load_project", "")
         frame = FrameSettings(self)
+        frame.m_auto_load_project_path = my_auto_load_project_path
         if frame.ShowModal() != wx.ID_OK:
             return
-        self.m_config.Write("auto_load_project", frame.m_ctrl_filepicker.GetPath())
+        self.m_config.Write("auto_load_project", frame.m_auto_load_project_path)
 
     def on_view_info(self, event):
         pane = self.m_aui_manager.GetPane(self.m_info)

@@ -8,8 +8,18 @@ _ = gettext.gettext
 class FrameSettings ( wx.Dialog ):
     def __init__( self, parent ):
         wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = _(u"Settings"), pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER )
-
         self._create_controls()
+
+        self.m_auto_load_project_path = None
+
+    def TransferDataToWindow(self):
+        if self.m_auto_load_project_path:
+            self.m_ctrl_filepicker.SetPath(self.m_auto_load_project_path)
+        return True
+
+    def TransferDataFromWindow(self):
+        self.m_auto_load_project_path = self.m_ctrl_filepicker.GetPath()
+        return True
 
     def _create_controls(self):
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
