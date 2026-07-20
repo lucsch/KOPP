@@ -7,6 +7,7 @@ import wx.aui
 import wx.dataview
 import wx.svg
 
+from kopp.framegraph import FrameGraph
 from kopp.frameinfo import FrameInfo
 from kopp.framemainlist import FrameMainListView
 from kopp.frameabout import FrameAbout
@@ -419,6 +420,7 @@ class FrameMain(wx.Frame):
         self.m_aui_manager = wx.aui.AuiManager(self)
         self.m_list = FrameMainListView(self, wx.ID_ANY)
         self.m_info = FrameInfo(self)
+        self.m_graph = FrameGraph(self)
 
         self.m_aui_manager.AddPane(
             self.m_list,
@@ -435,6 +437,19 @@ class FrameMain(wx.Frame):
             .Right()
             .BestSize(wx.Size(300, -1))
             .MinSize(wx.Size(200, -1))
+            .CloseButton(True)
+            .MaximizeButton(False)
+            .PaneBorder(False)
+            .Dockable(True),
+        )
+        self.m_aui_manager.AddPane(
+            self.m_graph,
+            wx.aui.AuiPaneInfo()
+            .Name("graph")
+            .Caption(_(u"Graph"))
+            .Bottom()
+            .BestSize(wx.Size(-1, 150))
+            .MinSize(wx.Size(200, 100))
             .CloseButton(True)
             .MaximizeButton(False)
             .PaneBorder(False)

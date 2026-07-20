@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "jinja2>=3.1.6",
+    "numpy>=2.5.1",
     "peewee>=4.1.2",
     "pyinstaller>=6.21.0",
     "wxpython==4.2.5",
