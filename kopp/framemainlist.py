@@ -135,9 +135,6 @@ class FrameMainListView(wx.dataview.DataViewCtrl):
     def SetTextValue(self, value, row, column):
         self.m_model.set_text_value(value, row, column)
 
-    def GetAllTextValues(self):
-        return [list(row["values"]) for row in self.m_model.rows]
-
         # self.Bind(wx.dataview.EVT_DATAVIEW_ITEM_ACTIVATED, self.on_comments)
         # self.Bind(wx.dataview.EVT_DATAVIEW_SELECTION_CHANGED, self.on_selection_change)
         #

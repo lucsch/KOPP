@@ -9,7 +9,7 @@ import wx.svg
 
 from kopp.framegraph import FrameGraph
 from kopp.frameinfo import FrameInfo
-from kopp.framemainlist import FrameMainListView, MainListViewData
+from kopp.framemainlist import FrameMainListView
 from kopp.frameabout import FrameAbout
 from kopp.framesettings import FrameSettings
 from kopp.database import ProjectDatabase
@@ -211,14 +211,27 @@ class FrameMain(wx.Frame):
             try:
                 XlsxExporter.export(
                     filename,
-                    MainListViewData.column_info.keys(),
-                    self.m_list.GetAllTextValues(),
+                    self._xlsx_export_rows(),
                 )
             except OSError as error:
                 wx.MessageBox(str(error), _("Export failed"), wx.OK | wx.ICON_ERROR)
                 return
 
         wx.MessageBox(_("Export completed."), _("Info"), wx.OK | wx.ICON_INFORMATION)
+
+    def _xlsx_export_rows(self):
+        return [
+            {
+                "day": self._weekday_name(record.date),
+                "date": record.date.date() if record.date else None,
+                "hr": (record.hr_base or 0) + (record.hr_maj or 0),
+                "annual": record.annual or 0,
+                "vac": record.vac or 0,
+                "tags": self._format_record_tags(record),
+                "comment": record.comment or "",
+            }
+            for record in Records.select().order_by(Records.date, Records.record_id)
+        ]
 
     def on_list_item_activated(self, event):
         self.on_edit_record(event)
@@ -344,13 +357,20 @@ class FrameMain(wx.Frame):
         if not value:
             return ""
 
-        weekdays = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
         return "{} {:02d}.{:02d}.{:02d}".format(
-            weekdays[value.weekday()],
+            self._weekday_name(value),
             value.day,
             value.month,
             value.year % 100,
         )
+
+    def _weekday_name(self, value):
+        value = self._date_to_datetime(value)
+        if not value:
+            return ""
+
+        weekdays = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+        return weekdays[value.weekday()]
 
     def _wx_date_to_datetime(self, value):
         return self._date_to_datetime(value)
