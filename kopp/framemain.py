@@ -15,7 +15,11 @@ from kopp.framesettings import FrameSettings
 from kopp.database import ProjectDatabase
 from kopp.database_model import Records, Tags, Tagsmix
 from kopp.framerecord import FrameRecord
-from kopp.record_totals import RecordTotals, RecordTotalsCalculator
+from kopp.record_totals import (
+    RecordCumulativeTotalsCalculator,
+    RecordTotals,
+    RecordTotalsCalculator,
+)
 from kopp.timeconverter import TimeConverter
 
 from kopp.version import COMMIT_NUMBER
@@ -72,6 +76,7 @@ class FrameMain(wx.Frame):
         self.m_prj_database.new_project()
         self.m_list.DeleteAllItems()
         self._update_info_window()
+        self._update_graph_window()
         self.m_status_bar.SetStatusText(wx.EmptyString, 1)
         self.m_prj_modified = False
         self.m_prj_in_memory = True
@@ -93,6 +98,7 @@ class FrameMain(wx.Frame):
         self.m_status_bar.SetStatusText(filename, 1)
         self._reload_records_list()
         self._update_info_window()
+        self._update_graph_window()
         self.m_prj_modified = False
         self.m_prj_in_memory = False
 
@@ -132,6 +138,7 @@ class FrameMain(wx.Frame):
         self._save_record_data(frame.data)
         self._reload_records_list()
         self._update_info_window()
+        self._update_graph_window()
         self.m_prj_modified = True
 
     def on_edit_record(self, event):
@@ -161,6 +168,7 @@ class FrameMain(wx.Frame):
         self._save_record_data(frame.data, record)
         self._reload_records_list()
         self._update_info_window()
+        self._update_graph_window()
         self.m_prj_modified = True
 
     def on_delete_record(self, event):
@@ -175,6 +183,7 @@ class FrameMain(wx.Frame):
 
         self.m_list.DeleteItem(row)
         self._update_info_window()
+        self._update_graph_window()
         self.m_prj_modified = True
 
     def on_list_item_activated(self, event):
@@ -221,6 +230,13 @@ class FrameMain(wx.Frame):
             selected_title = _("Selection")
 
         self.m_info.update_data(selected, selected_title, total)
+
+    def _update_graph_window(self):
+        if not self.m_prj_database.database:
+            self.m_graph.update_display([])
+            return
+
+        self.m_graph.update_display(RecordCumulativeTotalsCalculator.all())
 
     def _save_record_data(self, data, record=None):
         db_date = self._wx_date_to_datetime(data.date)
