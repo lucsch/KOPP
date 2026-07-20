@@ -189,8 +189,9 @@ class FrameMain(wx.Frame):
         self.m_prj_modified = True
 
     def on_export_xlsx(self, event):
-        if self.m_list.GetItemCount() == 0:
-            wx.MessageBox(_("No records to export."), _("Info"), wx.OK | wx.ICON_INFORMATION)
+        rows = self._xlsx_export_rows()
+        if not rows:
+            wx.LogWarning(_("No records to export."))
             return
 
         with wx.FileDialog(
@@ -209,15 +210,12 @@ class FrameMain(wx.Frame):
                 filename += ".xlsx"
 
             try:
-                XlsxExporter.export(
-                    filename,
-                    self._xlsx_export_rows(),
-                )
+                XlsxExporter.export(filename, rows)
             except OSError as error:
-                wx.MessageBox(str(error), _("Export failed"), wx.OK | wx.ICON_ERROR)
+                wx.LogError(_("Failed to export to {}: {}").format(filename, error))
                 return
 
-        wx.MessageBox(_("Export completed."), _("Info"), wx.OK | wx.ICON_INFORMATION)
+        wx.LogMessage(_("Exported to {}").format(filename))
 
     def _xlsx_export_rows(self):
         return [

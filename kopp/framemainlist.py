@@ -31,13 +31,26 @@ class FrameMainListModel(wx.dataview.DataViewIndexListModel):
         return "string"
 
     def GetValueByRow(self, row, column):
-        return self.rows[row]["values"][column]
+        try:
+            if row < 0 or row >= len(self.rows):
+                return ""
+            if column < 0 or column >= self.GetColumnCount():
+                return ""
+            return self.rows[row]["values"][column]
+        except Exception:
+            return ""
 
     def SetValueByRow(self, value, row, column):
+        if row < 0 or row >= len(self.rows):
+            return False
+        if column < 0 or column >= self.GetColumnCount():
+            return False
         self.rows[row]["values"][column] = value
         return True
 
     def GetAttrByRow(self, row, column, attr):
+        if row < 0 or row >= len(self.rows):
+            return False
         if column in (1, 2, 3) and self.rows[row]["negative_columns"].get(column, False):
             attr.SetColour(wx.RED)
             return True
@@ -48,6 +61,8 @@ class FrameMainListModel(wx.dataview.DataViewIndexListModel):
         self.RowAppended()
 
     def delete_item(self, row):
+        if row < 0 or row >= len(self.rows):
+            return
         del self.rows[row]
         self.RowDeleted(row)
 
@@ -56,22 +71,38 @@ class FrameMainListModel(wx.dataview.DataViewIndexListModel):
         self.Reset(0)
 
     def set_text_value(self, value, row, column):
+        if row < 0 or row >= len(self.rows):
+            return
+        if column < 0 or column >= self.GetColumnCount():
+            return
         self.rows[row]["values"][column] = value
         self.rows[row]["negative_columns"] = self._get_negative_columns(self.rows[row]["values"])
         self.RowChanged(row)
 
     def set_item_data(self, row, data):
+        if row < 0 or row >= len(self.rows):
+            return
         self.rows[row]["data"] = data
 
     def get_item_data(self, row):
+        if row < 0 or row >= len(self.rows):
+            return None
         return self.rows[row]["data"]
 
     def _make_row(self, values, data):
+        values = self._normalize_values(values)
         return {
-            "values": list(values),
+            "values": values,
             "data": data,
             "negative_columns": self._get_negative_columns(values),
         }
+
+    def _normalize_values(self, values):
+        values = list(values)
+        column_count = self.GetColumnCount()
+        if len(values) < column_count:
+            values += [""] * (column_count - len(values))
+        return values[:column_count]
 
     def _get_negative_columns(self, values):
         return {
