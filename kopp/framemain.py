@@ -9,7 +9,7 @@ import wx.svg
 
 from kopp.framegraph import FrameGraph
 from kopp.frameinfo import FrameInfo
-from kopp.framemainlist import FrameMainListView
+from kopp.framemainlist import FrameMainListView, MainListViewData
 from kopp.frameabout import FrameAbout
 from kopp.framesettings import FrameSettings
 from kopp.database import ProjectDatabase
@@ -21,6 +21,7 @@ from kopp.record_totals import (
     RecordTotalsCalculator,
 )
 from kopp.timeconverter import TimeConverter
+from kopp.xlsx_exporter import XlsxExporter
 
 from kopp.version import COMMIT_NUMBER
 from kopp.version import VERSION_MAJOR_MINOR
@@ -55,6 +56,7 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_add_record, id=self.m_menui_rec_add.GetId())
         self.Bind(wx.EVT_MENU, self.on_edit_record, id=self.m_menui_rec_edit.GetId())
         self.Bind(wx.EVT_MENU, self.on_delete_record, id=self.m_menui_rec_delete.GetId())
+        self.Bind(wx.EVT_MENU, self.on_export_xlsx, id=self.m_menui_rec_export_xlsx.GetId())
         self.Bind(wx.EVT_MENU, self.on_view_info, id=self.m_menui_view_info.GetId())
         self.Bind(wx.EVT_MENU, self.on_view_graph, id=self.m_menui_view_graph.GetId())
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
@@ -185,6 +187,38 @@ class FrameMain(wx.Frame):
         self._update_info_window()
         self._update_graph_window()
         self.m_prj_modified = True
+
+    def on_export_xlsx(self, event):
+        if self.m_list.GetItemCount() == 0:
+            wx.MessageBox(_("No records to export."), _("Info"), wx.OK | wx.ICON_INFORMATION)
+            return
+
+        with wx.FileDialog(
+            self,
+            _("Export to xlsx"),
+            defaultDir="",
+            defaultFile="records.xlsx",
+            wildcard="Excel workbook (*.xlsx)|*.xlsx",
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+        ) as dlg:
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+
+            filename = dlg.GetPath()
+            if not filename.lower().endswith(".xlsx"):
+                filename += ".xlsx"
+
+            try:
+                XlsxExporter.export(
+                    filename,
+                    MainListViewData.column_info.keys(),
+                    self.m_list.GetAllTextValues(),
+                )
+            except OSError as error:
+                wx.MessageBox(str(error), _("Export failed"), wx.OK | wx.ICON_ERROR)
+                return
+
+        wx.MessageBox(_("Export completed."), _("Info"), wx.OK | wx.ICON_INFORMATION)
 
     def on_list_item_activated(self, event):
         self.on_edit_record(event)
@@ -411,6 +445,11 @@ class FrameMain(wx.Frame):
         self.m_menui_rec_edit = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _(u"Edit...") + u"\t" + u"ENTER",
                                             wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_rec.Append(self.m_menui_rec_edit)
+
+        self.m_menu_rec.AppendSeparator()
+
+        self.m_menui_rec_export_xlsx = wx.MenuItem( self.m_menu_rec, wx.ID_ANY, _(u"Export to xlsx..."), wx.EmptyString, wx.ITEM_NORMAL )
+        self.m_menu_rec.Append( self.m_menui_rec_export_xlsx )
 
         self.m_menubar.Append(self.m_menu_rec, _(u"Records"))
 
