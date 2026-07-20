@@ -35,3 +35,6 @@ class FrameGraph ( wx.Panel ):
         self.SetSizer(bSizer8)
         self.Layout()
 
+    def update_display(self):
+        # Implementation for updating the graph display
+        pass

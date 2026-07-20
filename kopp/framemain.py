@@ -51,7 +51,8 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_add_record, id=self.m_menui_rec_add.GetId())
         self.Bind(wx.EVT_MENU, self.on_edit_record, id=self.m_menui_rec_edit.GetId())
         self.Bind(wx.EVT_MENU, self.on_delete_record, id=self.m_menui_rec_delete.GetId())
-        self.Bind(wx.EVT_MENU, self.on_view_info, id=self.m_menu_view_info.GetId())
+        self.Bind(wx.EVT_MENU, self.on_view_info, id=self.m_menui_view_info.GetId())
+        self.Bind(wx.EVT_MENU, self.on_view_graph, id=self.m_menui_view_graph.GetId())
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
         self.Bind(wx.EVT_MENU, self.on_website, id=self.m_menui_help_web.GetId())
         self.Bind(wx.EVT_MENU, self.on_settings, id=self.m_menui_settings.GetId())
@@ -340,9 +341,16 @@ class FrameMain(wx.Frame):
         pane.Show(event.IsChecked())
         self.m_aui_manager.Update()
 
+    def on_view_graph(self, event):
+        pane = self.m_aui_manager.GetPane(self.m_graph)
+        pane.Show(event.IsChecked())
+        self.m_aui_manager.Update()
+
     def on_pane_close(self, event):
         if event.GetPane().window == self.m_info:
-            self.m_menu_view_info.Check(False)
+            self.m_menui_view_info.Check(False)
+        if event.GetPane().window == self.m_graph:
+            self.m_menui_view_graph.Check(False)
         event.Skip()
 
     def on_close(self, event):
@@ -391,10 +399,14 @@ class FrameMain(wx.Frame):
         self.m_menubar.Append(self.m_menu_rec, _(u"Records"))
 
         self.m_menu_view = wx.Menu()
-        self.m_menu_view_info = wx.MenuItem(self.m_menu_view, wx.ID_ANY, _(u"Info window") + u"\t" + u"Ctrl+I",
-                                            wx.EmptyString, wx.ITEM_CHECK)
-        self.m_menu_view.Append(self.m_menu_view_info)
-        self.m_menu_view_info.Check(True)
+        self.m_menui_view_info = wx.MenuItem(self.m_menu_view, wx.ID_ANY, _(u"Info window") + u"\t" + u"Ctrl+I",
+                                             wx.EmptyString, wx.ITEM_CHECK)
+        self.m_menu_view.Append(self.m_menui_view_info)
+        self.m_menui_view_info.Check(True)
+
+        self.m_menui_view_graph = wx.MenuItem(self.m_menu_view, wx.ID_ANY,_("Graph Window...") + "\t" + "Ctrl+G",wx.EmptyString,wx.ITEM_CHECK)
+        self.m_menu_view.Append(self.m_menui_view_graph)
+        self.m_menui_view_graph.Check(True)
 
         self.m_menubar.Append(self.m_menu_view, _(u"View"))
 

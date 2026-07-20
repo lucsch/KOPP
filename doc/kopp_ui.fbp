@@ -31,7 +31,7 @@
     <property name="relative_path">1</property>
     <property name="use_microsoft_bom">0</property>
     <property name="use_native_eol">0</property>
-    <object class="Frame" expanded="false">
+    <object class="Frame" expanded="true">
       <property name="aui_managed">0</property>
       <property name="aui_manager_style">wxAUI_MGR_DEFAULT</property>
       <property name="bg"></property>
@@ -118,7 +118,7 @@
         <property name="window_name"></property>
         <property name="window_style"></property>
       </object>
-      <object class="wxMenuBar" expanded="false">
+      <object class="wxMenuBar" expanded="true">
         <property name="bg"></property>
         <property name="context_help"></property>
         <property name="context_menu">1</property>
@@ -262,7 +262,7 @@
             <property name="unchecked_bitmap"></property>
           </object>
         </object>
-        <object class="wxMenu" expanded="false">
+        <object class="wxMenu" expanded="true">
           <property name="label">View</property>
           <property name="name">m_menu_view</property>
           <property name="permission">protected</property>
@@ -274,9 +274,22 @@
             <property name="id">wxID_ANY</property>
             <property name="kind">wxITEM_CHECK</property>
             <property name="label">Info window</property>
-            <property name="name">m_menu_view_info</property>
+            <property name="name">m_menui_view_info</property>
             <property name="permission">none</property>
             <property name="shortcut">Ctrl+I</property>
+            <property name="unchecked_bitmap"></property>
+          </object>
+          <object class="wxMenuItem" expanded="true">
+            <property name="bitmap"></property>
+            <property name="checked">0</property>
+            <property name="enabled">1</property>
+            <property name="help"></property>
+            <property name="id">wxID_ANY</property>
+            <property name="kind">wxITEM_CHECK</property>
+            <property name="label">Graph Window...</property>
+            <property name="name">m_menui_view_graph</property>
+            <property name="permission">none</property>
+            <property name="shortcut">Ctrl+G</property>
             <property name="unchecked_bitmap"></property>
           </object>
         </object>

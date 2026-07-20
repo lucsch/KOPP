@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from peewee import fn
 
@@ -9,6 +10,14 @@ from kopp.database_model import Records
 class RecordTotals:
     hr_base: int = 0
     hr_maj: int = 0
+    annual: int = 0
+    vac: int = 0
+
+
+@dataclass(frozen=True)
+class RecordCumulativeTotals:
+    date: datetime
+    hr_total: int = 0
     annual: int = 0
     vac: int = 0
 
@@ -54,4 +63,67 @@ class RecordTotalsCalculator:
             hr_maj=row["hr_maj"],
             annual=row["annual"],
             vac=row["vac"],
+        )
+
+
+class RecordCumulativeTotalsCalculator:
+    """Compute cumulative minute totals grouped by record date."""
+
+    @classmethod
+    def all(cls) -> list[RecordCumulativeTotals]:
+        totals = cls._undated_totals()
+        cumulative_hr_total = totals.hr_base + totals.hr_maj
+        cumulative_annual = totals.annual
+        cumulative_vac = totals.vac
+        cumulative_totals = []
+
+        for row in cls._dated_totals_query():
+            cumulative_hr_total += row["hr_base"] + row["hr_maj"]
+            cumulative_annual += row["annual"]
+            cumulative_vac += row["vac"]
+            cumulative_totals.append(
+                RecordCumulativeTotals(
+                    date=row["date"],
+                    hr_total=cumulative_hr_total,
+                    annual=cumulative_annual,
+                    vac=cumulative_vac,
+                )
+            )
+
+        return cumulative_totals
+
+    @classmethod
+    def _undated_totals(cls) -> RecordTotals:
+        row = (
+            Records.select(
+                fn.COALESCE(fn.SUM(Records.hr_base), 0).alias("hr_base"),
+                fn.COALESCE(fn.SUM(Records.hr_maj), 0).alias("hr_maj"),
+                fn.COALESCE(fn.SUM(Records.annual), 0).alias("annual"),
+                fn.COALESCE(fn.SUM(Records.vac), 0).alias("vac"),
+            )
+            .where(Records.date.is_null(True))
+            .dicts()
+            .get()
+        )
+        return RecordTotals(
+            hr_base=row["hr_base"],
+            hr_maj=row["hr_maj"],
+            annual=row["annual"],
+            vac=row["vac"],
+        )
+
+    @classmethod
+    def _dated_totals_query(cls):
+        return (
+            Records.select(
+                Records.date.alias("date"),
+                fn.COALESCE(fn.SUM(Records.hr_base), 0).alias("hr_base"),
+                fn.COALESCE(fn.SUM(Records.hr_maj), 0).alias("hr_maj"),
+                fn.COALESCE(fn.SUM(Records.annual), 0).alias("annual"),
+                fn.COALESCE(fn.SUM(Records.vac), 0).alias("vac"),
+            )
+            .where(Records.date.is_null(False))
+            .group_by(Records.date)
+            .order_by(Records.date)
+            .dicts()
         )
