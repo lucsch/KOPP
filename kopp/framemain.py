@@ -67,6 +67,9 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.on_close)
         self.m_list.Bind(wx.dataview.EVT_DATAVIEW_ITEM_ACTIVATED, self.on_list_item_activated)
         self.m_list.Bind(wx.dataview.EVT_DATAVIEW_SELECTION_CHANGED, self.on_list_selection_changed)
+        self.m_ctrl_search.Bind(wx.EVT_TEXT_ENTER, self.on_search)
+        self.m_ctrl_search.Bind(wx.EVT_SEARCHCTRL_SEARCH_BTN, self.on_search)
+        self.m_ctrl_search.Bind(wx.EVT_SEARCHCTRL_CANCEL_BTN, self.on_search)
 
         # open a new project or load the last one depending on the config
         auto_load_project = self.m_config.Read("auto_load_project", "")
@@ -238,6 +241,10 @@ class FrameMain(wx.Frame):
     def on_list_selection_changed(self, event):
         self._update_info_window()
         event.Skip()
+
+    def on_search(self, event):
+        search_text = self.m_ctrl_search.GetValue().strip().lower()
+        #TODO: Implement search functionality to filter records in the list based on the search_text. If no text is entered, show all records.
 
     def _get_selected_record(self, show_message=True):
         if self.m_list.GetSelectedItemsCount() != 1:
