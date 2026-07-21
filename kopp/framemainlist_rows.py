@@ -6,10 +6,10 @@ class MainListViewData:
 
     column_info = OrderedDict([
         ("Date", 150),
-        ("HR", 80),
-        ("A", 80),
-        ("VAC", 80),
-        ("Tags", 150),
+        ("HR", 70),
+        ("A", 70),
+        ("VAC", 70),
+        ("Tags", 130),
         ("Comment", 200),
     ])
 
