@@ -7,6 +7,7 @@ import wx.aui
 import wx.dataview
 import wx.svg
 
+from kopp.bitmaps import BitmapGeneral
 from kopp.framegraph import FrameGraph
 from kopp.frameinfo import FrameInfo
 from kopp.framemainlist import FrameMainListView
@@ -406,12 +407,16 @@ class FrameMain(wx.Frame):
 
     def on_view_info(self, event):
         pane = self.m_aui_manager.GetPane(self.m_info)
-        pane.Show(event.IsChecked())
+        show_action = not pane.IsShown()
+        self.m_menui_view_info.Check(show_action)
+        pane.Show(show_action)
         self.m_aui_manager.Update()
 
     def on_view_graph(self, event):
         pane = self.m_aui_manager.GetPane(self.m_graph)
-        pane.Show(event.IsChecked())
+        show_action = not pane.IsShown()
+        self.m_menui_view_graph.Check(show_action)
+        pane.Show(show_action)
         self.m_aui_manager.Update()
 
     def on_pane_close(self, event):
@@ -497,7 +502,34 @@ class FrameMain(wx.Frame):
         self.SetMenuBar(self.m_menubar)
 
     def _create_toolbar(self):
-        pass
+        # load bitmaps
+        bmp_color = "#000000"
+        if wx.SystemSettings.GetAppearance().IsDark():
+            bmp_color = "#FFFFFF"
+        size = wx.Size(24, 24)
+
+        bmp_record_add = wx.svg.SVGimage.CreateFromBytes(BitmapGeneral.TOOLBAR_ADD_RECORD.format(bmp_color).encode('utf-8')).ConvertToScaledBitmap( size )
+        bmp_graph = wx.svg.SVGimage.CreateFromBytes(BitmapGeneral.TOOLBAR_GRAPH.format(bmp_color).encode('utf-8')).ConvertToScaledBitmap( size )
+        bmp_stat = wx.svg.SVGimage.CreateFromBytes(BitmapGeneral.TOOLBAR_STAT.format(bmp_color).encode('utf-8')).ConvertToScaledBitmap( size )
+
+        # create toolbar
+        toolbar_style = wx.TB_HORIZONTAL
+        # if platform.system() == "Darwin":
+        #     toolbar_style = wx.TB_HORIZONTAL | wx.TB_TEXT
+        self.m_toolbar = self.CreateToolBar(toolbar_style, wx.ID_ANY)
+        self.m_toolbar.SetToolBitmapSize(wx.Size(24, 24))
+        self.m_toolbar.AddTool(self.m_menui_rec_add.GetId(), "Add Record", bmp_record_add, "Add Record")
+        self.m_toolbar.AddTool(self.m_menui_view_graph.GetId(), "Graph", bmp_graph, "Graph")
+        self.m_toolbar.AddTool(self.m_menui_view_info.GetId(), "Info", bmp_stat, "Info")
+        self.m_toolbar.AddStretchableSpace()
+
+        self.m_ctrl_search = wx.SearchCtrl(self.m_toolbar, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
+                                           wx.Size(300, -1), style=wx.TE_PROCESS_ENTER)
+        self.m_ctrl_search.ShowSearchButton(True)
+        self.m_ctrl_search.ShowCancelButton(True)
+        self.m_toolbar.AddControl(self.m_ctrl_search)
+        self.m_toolbar.Realize()
+
 
     def _create_controls(self):
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
