@@ -1,115 +1,53 @@
-#!/usr/bin/env python3
-
-from collections import OrderedDict
-
 import wx
 import wx.dataview
 
-
-class MainListViewData:
-    """store data for the main list (columns name and width"""
-
-    column_info = OrderedDict([
-        ("Date", 150),
-        ("HR", 80),
-        ("A", 80),
-        ("VAC", 80),
-        ("Tags", 150),
-        ("Comment", 200),
-    ])
+from kopp.framemainlist_rows import MainListRows, MainListViewData
 
 
 class FrameMainListModel(wx.dataview.DataViewIndexListModel):
     def __init__(self):
         wx.dataview.DataViewIndexListModel.__init__(self, 0)
-        self.rows = []
+        self.row_data = MainListRows()
 
     def GetColumnCount(self):
-        return len(MainListViewData.column_info)
+        return self.row_data.column_count()
 
     def GetColumnType(self, column):
         return "string"
 
     def GetValueByRow(self, row, column):
-        try:
-            if row < 0 or row >= len(self.rows):
-                return ""
-            if column < 0 or column >= self.GetColumnCount():
-                return ""
-            return self.rows[row]["values"][column]
-        except Exception:
-            return ""
+        return self.row_data.get_value(row, column)
 
     def SetValueByRow(self, value, row, column):
-        if row < 0 or row >= len(self.rows):
-            return False
-        if column < 0 or column >= self.GetColumnCount():
-            return False
-        self.rows[row]["values"][column] = value
-        return True
+        return self.row_data.set_value(value, row, column)
 
     def GetAttrByRow(self, row, column, attr):
-        if row < 0 or row >= len(self.rows):
-            return False
-        if column in (1, 2, 3) and self.rows[row]["negative_columns"].get(column, False):
+        if column in (1, 2, 3) and self.row_data.has_negative_value(row, column):
             attr.SetColour(wx.RED)
             return True
         return False
 
     def append_item(self, values, data):
-        self.rows.append(self._make_row(values, data))
+        self.row_data.append_item(values, data)
         self.RowAppended()
 
     def delete_item(self, row):
-        if row < 0 or row >= len(self.rows):
-            return
-        del self.rows[row]
-        self.RowDeleted(row)
+        if self.row_data.delete_item(row):
+            self.RowDeleted(row)
 
     def delete_all_items(self):
-        self.rows.clear()
+        self.row_data.delete_all_items()
         self.Reset(0)
 
     def set_text_value(self, value, row, column):
-        if row < 0 or row >= len(self.rows):
-            return
-        if column < 0 or column >= self.GetColumnCount():
-            return
-        self.rows[row]["values"][column] = value
-        self.rows[row]["negative_columns"] = self._get_negative_columns(self.rows[row]["values"])
-        self.RowChanged(row)
+        if self.row_data.set_value(value, row, column):
+            self.RowChanged(row)
 
     def set_item_data(self, row, data):
-        if row < 0 or row >= len(self.rows):
-            return
-        self.rows[row]["data"] = data
+        self.row_data.set_item_data(row, data)
 
     def get_item_data(self, row):
-        if row < 0 or row >= len(self.rows):
-            return None
-        return self.rows[row]["data"]
-
-    def _make_row(self, values, data):
-        values = self._normalize_values(values)
-        return {
-            "values": values,
-            "data": data,
-            "negative_columns": self._get_negative_columns(values),
-        }
-
-    def _normalize_values(self, values):
-        values = list(values)
-        column_count = self.GetColumnCount()
-        if len(values) < column_count:
-            values += [""] * (column_count - len(values))
-        return values[:column_count]
-
-    def _get_negative_columns(self, values):
-        return {
-            column: values[column].startswith("-")
-            for column in (1, 2, 3)
-            if column < len(values)
-        }
+        return self.row_data.get_item_data(row)
 
 
 class FrameMainListView(wx.dataview.DataViewCtrl):
@@ -143,7 +81,7 @@ class FrameMainListView(wx.dataview.DataViewCtrl):
         self.m_model.delete_all_items()
 
     def GetItemCount(self):
-        return len(self.m_model.rows)
+        return len(self.m_model.row_data.rows)
 
     def GetSelectedItemsCount(self):
         return len(self.GetSelections())
