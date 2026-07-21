@@ -67,6 +67,7 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.on_close)
         self.m_list.Bind(wx.dataview.EVT_DATAVIEW_ITEM_ACTIVATED, self.on_list_item_activated)
         self.m_list.Bind(wx.dataview.EVT_DATAVIEW_SELECTION_CHANGED, self.on_list_selection_changed)
+        self.m_ctrl_search.Bind(wx.EVT_TEXT, self.on_search)
         self.m_ctrl_search.Bind(wx.EVT_TEXT_ENTER, self.on_search)
         self.m_ctrl_search.Bind(wx.EVT_SEARCHCTRL_SEARCH_BTN, self.on_search)
         self.m_ctrl_search.Bind(wx.EVT_SEARCHCTRL_CANCEL_BTN, self.on_search)
@@ -243,8 +244,12 @@ class FrameMain(wx.Frame):
         event.Skip()
 
     def on_search(self, event):
-        search_text = self.m_ctrl_search.GetValue().strip().lower()
-        #TODO: Implement search functionality to filter records in the list based on the search_text. If no text is entered, show all records.
+        if event and event.GetEventType() == wx.wxEVT_SEARCHCTRL_CANCEL_BTN:
+            self.m_ctrl_search.ChangeValue("")
+        self._reload_records_list()
+        self._update_info_window()
+        if event:
+            event.Skip()
 
     def _get_selected_record(self, show_message=True):
         if self.m_list.GetSelectedItemsCount() != 1:
@@ -320,11 +325,26 @@ class FrameMain(wx.Frame):
 
     def _reload_records_list(self):
         self.m_list.DeleteAllItems()
+        search_text = self._current_search_text()
         for record in Records.select().order_by(Records.date, Records.record_id):
-            self._append_record_to_list(record)
+            if self._record_matches_search(record, search_text):
+                self._append_record_to_list(record)
 
     def _append_record_to_list(self, record):
         self.m_list.AppendItem(self._record_to_list_values(record), record.record_id)
+
+    def _current_search_text(self):
+        if not hasattr(self, "m_ctrl_search"):
+            return ""
+        return self.m_ctrl_search.GetValue().strip().lower()
+
+    def _record_matches_search(self, record, search_text):
+        if not search_text:
+            return True
+
+        tags = self._format_record_tags(record).lower()
+        comment = (record.comment or "").lower()
+        return search_text in tags or search_text in comment
 
     def _update_record_list_row(self, row, record):
         for column, value in enumerate(self._record_to_list_values(record)):
