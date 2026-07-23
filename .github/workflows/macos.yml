@@ -39,7 +39,7 @@ jobs:
         run: |
           mkdir -p artifacts
           cd bin/dist
-          zip -r ../../artifacts/kopp-macos.zip .
+          zip -r ../../artifacts/kopp-macos.zip kopp_*.app
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4

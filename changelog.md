@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.1.52] - 2026-07-23
+
+### Added
+
+- Adding a window for displaying the data graphicaly (#3)
+- Adding an option to export the data to a xslx file (#1)
+- Adding a toolbar and a search control (#2)
+
+### Fixed 
+
+- When deploying on OSX, export only the .app directory
 
 ## [v1.0.38] - 2026-07-12
 
