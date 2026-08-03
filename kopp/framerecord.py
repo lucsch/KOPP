@@ -77,7 +77,7 @@ class FrameRecord(wx.Dialog):
 
         self.m_ctrl_btn_tag.Bind(wx.EVT_BUTTON, self.on_add_tag)
         self.m_ctrl_btn_50.Bind(wx.EVT_BUTTON, self.on_add_50)
-        self.m_ctrl_btn_100.Bind(wx.EVT_BUTTON, self.on_add_100)
+        self.m_ctrl_btn_25.Bind(wx.EVT_BUTTON, self.on_add_25)
 
     def on_hr_value_changed(self, event):
         self._update_hr_total()
@@ -151,9 +151,12 @@ class FrameRecord(wx.Dialog):
         self.m_ctrl_hri_m.SetValue(minutes)
         self.on_hr_value_changed(event)
 
-    def on_add_100(self, event):
-        self.m_ctrl_hri_h.SetValue(self.m_ctrl_hrd_h.GetValue())
-        self.m_ctrl_hri_m.SetValue(self.m_ctrl_hrd_m.GetValue())
+    def on_add_25(self, event):
+        min_done = TimeConverter.to_total_minutes(self.m_ctrl_hrd_h.GetValue(), self.m_ctrl_hrd_m.GetValue())
+        min_done = int(min_done * 0.25)
+        hours, minutes = TimeConverter.from_total_minutes(min_done)
+        self.m_ctrl_hri_h.SetValue(hours)
+        self.m_ctrl_hri_m.SetValue(minutes)
         self.on_hr_value_changed(event)
 
     def _create_controls(self):
@@ -214,9 +217,9 @@ class FrameRecord(wx.Dialog):
 
         fgSizer1.Add((0, 0), 1, wx.EXPAND, 5)
 
-        self.m_ctrl_btn_100 = wx.Button(sbSizer1.GetStaticBox(), wx.ID_ANY, _(u"+100%"), wx.DefaultPosition,
-                                        wx.DefaultSize, 0)
-        fgSizer1.Add(self.m_ctrl_btn_100, 0, wx.ALL | wx.EXPAND, 5)
+        self.m_ctrl_btn_25 = wx.Button(sbSizer1.GetStaticBox(), wx.ID_ANY, _(u"+25%"), wx.DefaultPosition,
+                                       wx.DefaultSize, 0)
+        fgSizer1.Add(self.m_ctrl_btn_25, 0, wx.ALL | wx.EXPAND, 5)
 
         self.m_staticText4 = wx.StaticText(sbSizer1.GetStaticBox(), wx.ID_ANY, _(u"HR Increased (H:M):"),
                                            wx.DefaultPosition, wx.DefaultSize, 0)
