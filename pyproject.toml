@@ -8,10 +8,12 @@ dependencies = [
     "jinja2>=3.1.6",
     "numpy>=2.5.1",
     "openpyxl>=3.1.5",
-    "peewee==4.2.6",
+    "peewee==4.3.0",
     "pyinstaller>=6.21.0",
-    "ruff==0.15.22",
-    "wxpython==4.2.5",
+    "ruff==0.16.1",
+    "wxpython==4.3.1; sys_platform == 'win32'",
+    "wxpython==4.3.1; sys_platform == 'darwin'",
+    "wxpython==4.2.5; sys_platform == 'linux'",
 ]
 
 [dependency-groups]
