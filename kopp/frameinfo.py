@@ -1,13 +1,14 @@
+import os
+import sys
 from dataclasses import dataclass
 
 import wx
 import wx.html
-import os
-import sys
 from jinja2 import Environment, FileSystemLoader
-from kopp.timeconverter import TimeConverter
 
 from kopp.record_totals import RecordTotals
+from kopp.timeconverter import TimeConverter
+
 
 @dataclass
 class InfoData:

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import argparse
 import fileinput
 import os
@@ -12,7 +10,7 @@ from kopp.createversion import GitVersion
 ACTIVE_PLATEFORM = ["Windows", "Linux", "OSX"]
 ICON_BASE_NAME = "kopp_icon"
 
-class CreateApp(object):
+class CreateApp:
     def __init__(self, plateform="OSX"):
         if (plateform not in ACTIVE_PLATEFORM):
             raise ValueError(f"plateform must be one of {ACTIVE_PLATEFORM!r}.")
@@ -40,11 +38,11 @@ class CreateApp(object):
     def modify_spec_file(self):
         """modifiy the spec file before building"""
         if self.plateform == ACTIVE_PLATEFORM[2]:  # OSX
-            for line in fileinput.input(os.path.join(self.binpath, "kopp_{}.spec".format(self.m_commit_number)), inplace=1):
+            for line in fileinput.input(os.path.join(self.binpath, f"kopp_{self.m_commit_number}.spec"), inplace=1):
                 if "bundle_identifier=None)" in line:
                     print("             bundle_identifier=None,")
                     print("             info_plist={")
-                    print("                 'CFBundleShortVersionString': '1.1.{}',".format(self.m_commit_number))
+                    print(f"                 'CFBundleShortVersionString': '1.1.{self.m_commit_number}',")
                     print("                 'NSHumanReadableCopyright': '(c) 2026, Lucien SCHREIBER',")
                     print("                 'NSHighResolutionCapable': 'True'")
                     print("             })")
@@ -68,8 +66,8 @@ class CreateApp(object):
             "--windowed",
             "--hidden-import=wx",
             "--hidden-import=pkg_resources.py2_warn",
-            "-nkopp_{}".format(self.m_commit_number),
-            "--icon={}".format(self.iconfile),
+            f"-nkopp_{self.m_commit_number}",
+            f"--icon={self.iconfile}",
             f"--add-data={data_source}{data_dest}",
             os.path.join(self.basepath, "kopp", "__main__.py")]
         print(command)
@@ -94,7 +92,7 @@ class CreateApp(object):
         # run pyinstaller with fipro.spec
         try:
             p = subprocess.Popen(
-                ["pyinstaller", "kopp_{}.spec".format(self.m_commit_number), "-y"], cwd=self.binpath)
+                ["pyinstaller", f"kopp_{self.m_commit_number}.spec", "-y"], cwd=self.binpath)
             p.wait()
         except subprocess.SubprocessError as e:
             print(f"Error running pyinstaller: {e}")

@@ -1,9 +1,9 @@
+import gettext
 from datetime import datetime
 
 import wx
-import wx.lib.plot as plot
+from wx.lib import plot
 
-import gettext
 _ = gettext.gettext
 
 

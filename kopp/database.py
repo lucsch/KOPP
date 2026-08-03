@@ -1,9 +1,10 @@
-#!/usr/bin/env/ python3
-
-from kopp.database_model import database_proxy, Tags, Records, Tagsmix
-from peewee import SqliteDatabase
 import os
 import sqlite3
+
+from peewee import SqliteDatabase
+
+from kopp.database_model import Records, Tags, Tagsmix, database_proxy
+
 
 class Database:
     def __init__(self, database_filename:str):

@@ -1,9 +1,6 @@
-#!/usr/bin/env/ python3
-
 import wx
 
 from kopp.framemain import FrameMain
-
 
 ##########################################################
 #  MAIN APP CLASS

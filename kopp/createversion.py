@@ -1,9 +1,6 @@
-#!/usr/bin/python
-
 import argparse
 import os
-from subprocess import CalledProcessError
-from subprocess import check_output
+from subprocess import CalledProcessError, check_output
 
 
 class GitVersion:
@@ -25,7 +22,7 @@ class GitVersion:
         try:
             out = check_output(commandlist)
         except CalledProcessError:
-            print("Error running command: {}".format(commandlist))
+            print(f"Error running command: {commandlist}")
             return ""
         return out
 

@@ -1,6 +1,13 @@
-#!/usr/bin/env/ python3
-
-from peewee import Proxy, Model, AutoField, DateTimeField, IntegerField, CharField, ForeignKeyField, CompositeKey
+from peewee import (
+    AutoField,
+    CharField,
+    CompositeKey,
+    DateTimeField,
+    ForeignKeyField,
+    IntegerField,
+    Model,
+    Proxy,
+)
 
 # Create a "Proxy". This allows defining models first,
 # and linking the database file later via parameters.

@@ -4,18 +4,16 @@ import wx
 import wx.svg
 
 from kopp.bitmaps import BitmapGeneral
-from kopp.version import BRANCH_NAME
-from kopp.version import COMMIT_ID
-from kopp.version import COMMIT_NUMBER
-from kopp.version import VERSION_MAJOR_MINOR
+from kopp.version import BRANCH_NAME, COMMIT_ID, COMMIT_NUMBER, VERSION_MAJOR_MINOR
+
 
 class FrameAbout(wx.Dialog):
 
     def __init__(self, parent, program_name):
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=u"About", pos=wx.DefaultPosition, size=wx.DefaultSize,
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title="About", pos=wx.DefaultPosition, size=wx.DefaultSize,
                            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
 
-        self._create_controls(program_name + " v{}".format(VERSION_MAJOR_MINOR))
+        self._create_controls(program_name + f" v{VERSION_MAJOR_MINOR}")
 
         # set version number
         self.m_textCtrl3.AppendText("Commit id: " + COMMIT_ID + "\n")

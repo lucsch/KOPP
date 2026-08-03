@@ -1,13 +1,12 @@
-#!/usr/bin/env/ python3
+import gettext
 
 import wx
 
-import gettext
 _ = gettext.gettext
 
 class FrameSettings ( wx.Dialog ):
     def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = _(u"Settings"), pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER )
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = _("Settings"), pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER )
         self._create_controls()
 
         self.m_auto_load_project_path = None
@@ -26,16 +25,16 @@ class FrameSettings ( wx.Dialog ):
 
         bSizer7 = wx.BoxSizer(wx.VERTICAL)
 
-        sbSizer6 = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u"Auto load project")), wx.HORIZONTAL)
+        sbSizer6 = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _("Auto load project")), wx.HORIZONTAL)
 
-        self.m_staticText12 = wx.StaticText(sbSizer6.GetStaticBox(), wx.ID_ANY, _(u"Project:"), wx.DefaultPosition,
+        self.m_staticText12 = wx.StaticText(sbSizer6.GetStaticBox(), wx.ID_ANY, _("Project:"), wx.DefaultPosition,
                                             wx.DefaultSize, 0)
         self.m_staticText12.Wrap(-1)
 
         sbSizer6.Add(self.m_staticText12, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
         self.m_ctrl_filepicker = wx.FilePickerCtrl(sbSizer6.GetStaticBox(), wx.ID_ANY, wx.EmptyString,
-                                                   _(u"Select a file"), _(u"*.kdb"), wx.DefaultPosition,
+                                                   _("Select a file"), _("*.kdb"), wx.DefaultPosition,
                                                    wx.Size(300, -1),
                                                    wx.FLP_DEFAULT_STYLE | wx.FLP_FILE_MUST_EXIST | wx.FLP_OPEN | wx.FLP_USE_TEXTCTRL)
         sbSizer6.Add(self.m_ctrl_filepicker, 1, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)

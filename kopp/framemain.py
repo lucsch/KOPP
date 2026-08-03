@@ -385,19 +385,14 @@ class FrameMain(wx.Frame):
 
         sign = "-" if total_minutes < 0 else ""
         hours, minutes = TimeConverter.from_total_minutes(abs(total_minutes))
-        return "{}{}:{:02d}".format(sign, hours, minutes)
+        return f"{sign}{hours}:{minutes:02d}"
 
     def _format_record_date(self, value):
         value = self._date_to_datetime(value)
         if not value:
             return ""
 
-        return "{} {:02d}.{:02d}.{:02d}".format(
-            self._weekday_name(value),
-            value.day,
-            value.month,
-            value.year % 100,
-        )
+        return f"{self._weekday_name(value)} {value.day:02d}.{value.month:02d}.{value.year % 100:02d}"
 
     def _weekday_name(self, value):
         value = self._date_to_datetime(value)
@@ -469,51 +464,51 @@ class FrameMain(wx.Frame):
     def _create_menubar(self):
         self.m_menubar = wx.MenuBar(0)
         self.m_menu_file = wx.Menu()
-        self.m_menui_file_new = wx.MenuItem(self.m_menu_file, wx.ID_NEW, _(u"New"), wx.EmptyString, wx.ITEM_NORMAL)
+        self.m_menui_file_new = wx.MenuItem(self.m_menu_file, wx.ID_NEW, _("New"), wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_file.Append(self.m_menui_file_new)
 
-        self.m_menui_file_open = wx.MenuItem(self.m_menu_file, wx.ID_OPEN, _(u"Open...") + u"\t" + u"Ctrl+O",
+        self.m_menui_file_open = wx.MenuItem(self.m_menu_file, wx.ID_OPEN, _("Open...") + "\t" + "Ctrl+O",
                                              wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_file.Append(self.m_menui_file_open)
 
-        self.m_menui_file_save = wx.MenuItem(self.m_menu_file, wx.ID_ANY, _(u"Save as...") + u"\t" + u"Ctrl+S",
+        self.m_menui_file_save = wx.MenuItem(self.m_menu_file, wx.ID_ANY, _("Save as...") + "\t" + "Ctrl+S",
                                              wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_file.Append(self.m_menui_file_save)
 
         self.m_menu_file.AppendSeparator()
 
-        self.m_menui_settings = wx.MenuItem(self.m_menu_file, wx.ID_ANY, _(u"Settings...") + u"\t" + u"Ctrl+,",
+        self.m_menui_settings = wx.MenuItem(self.m_menu_file, wx.ID_ANY, _("Settings...") + "\t" + "Ctrl+,",
                                             wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_file.Append(self.m_menui_settings)
 
         self.m_menu_file.AppendSeparator()
 
-        self.m_menui_file_exit = wx.MenuItem(self.m_menu_file, wx.ID_EXIT, _(u"Quit"), wx.EmptyString, wx.ITEM_NORMAL)
+        self.m_menui_file_exit = wx.MenuItem(self.m_menu_file, wx.ID_EXIT, _("Quit"), wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_file.Append(self.m_menui_file_exit)
 
-        self.m_menubar.Append(self.m_menu_file, _(u"&File"))
+        self.m_menubar.Append(self.m_menu_file, _("&File"))
 
         self.m_menu_rec = wx.Menu()
-        self.m_menui_rec_add = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _(u"Add...") + u"\t" + u"Ctrl+N", wx.EmptyString,
+        self.m_menui_rec_add = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _("Add...") + "\t" + "Ctrl+N", wx.EmptyString,
                                            wx.ITEM_NORMAL)
         self.m_menu_rec.Append(self.m_menui_rec_add)
 
-        self.m_menui_rec_delete = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _(u"Delete"), wx.EmptyString, wx.ITEM_NORMAL)
+        self.m_menui_rec_delete = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _("Delete"), wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_rec.Append(self.m_menui_rec_delete)
 
-        self.m_menui_rec_edit = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _(u"Edit...") + u"\t" + u"ENTER",
+        self.m_menui_rec_edit = wx.MenuItem(self.m_menu_rec, wx.ID_ANY, _("Edit...") + "\t" + "ENTER",
                                             wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_rec.Append(self.m_menui_rec_edit)
 
         self.m_menu_rec.AppendSeparator()
 
-        self.m_menui_rec_export_xlsx = wx.MenuItem( self.m_menu_rec, wx.ID_ANY, _(u"Export to xlsx..."), wx.EmptyString, wx.ITEM_NORMAL )
+        self.m_menui_rec_export_xlsx = wx.MenuItem( self.m_menu_rec, wx.ID_ANY, _("Export to xlsx..."), wx.EmptyString, wx.ITEM_NORMAL )
         self.m_menu_rec.Append( self.m_menui_rec_export_xlsx )
 
-        self.m_menubar.Append(self.m_menu_rec, _(u"Records"))
+        self.m_menubar.Append(self.m_menu_rec, _("Records"))
 
         self.m_menu_view = wx.Menu()
-        self.m_menui_view_info = wx.MenuItem(self.m_menu_view, wx.ID_ANY, _(u"Info window") + u"\t" + u"Ctrl+I",
+        self.m_menui_view_info = wx.MenuItem(self.m_menu_view, wx.ID_ANY, _("Info window") + "\t" + "Ctrl+I",
                                              wx.EmptyString, wx.ITEM_CHECK)
         self.m_menu_view.Append(self.m_menui_view_info)
         self.m_menui_view_info.Check(True)
@@ -522,18 +517,18 @@ class FrameMain(wx.Frame):
         self.m_menu_view.Append(self.m_menui_view_graph)
         self.m_menui_view_graph.Check(True)
 
-        self.m_menubar.Append(self.m_menu_view, _(u"View"))
+        self.m_menubar.Append(self.m_menu_view, _("View"))
 
         self.m_menui_help = wx.Menu()
-        self.m_menui_help_about = wx.MenuItem(self.m_menui_help, wx.ID_ABOUT, _(u"About"), wx.EmptyString,
+        self.m_menui_help_about = wx.MenuItem(self.m_menui_help, wx.ID_ABOUT, _("About"), wx.EmptyString,
                                               wx.ITEM_NORMAL)
         self.m_menui_help.Append(self.m_menui_help_about)
 
-        self.m_menui_help_web = wx.MenuItem(self.m_menui_help, wx.ID_ANY, _(u"Website..."), wx.EmptyString,
+        self.m_menui_help_web = wx.MenuItem(self.m_menui_help, wx.ID_ANY, _("Website..."), wx.EmptyString,
                                             wx.ITEM_NORMAL)
         self.m_menui_help.Append(self.m_menui_help_web)
 
-        self.m_menubar.Append(self.m_menui_help, _(u"Help"))
+        self.m_menubar.Append(self.m_menui_help, _("Help"))
 
         self.SetMenuBar(self.m_menubar)
 
@@ -586,7 +581,7 @@ class FrameMain(wx.Frame):
             self.m_info,
             wx.aui.AuiPaneInfo()
             .Name("info")
-            .Caption(_(u"Info window"))
+            .Caption(_("Info window"))
             .Right()
             .BestSize(wx.Size(300, -1))
             .MinSize(wx.Size(200, -1))
@@ -599,7 +594,7 @@ class FrameMain(wx.Frame):
             self.m_graph,
             wx.aui.AuiPaneInfo()
             .Name("graph")
-            .Caption(_(u"Graph"))
+            .Caption(_("Graph"))
             .Bottom()
             .BestSize(wx.Size(-1, 150))
             .MinSize(wx.Size(200, 100))
