@@ -4,6 +4,7 @@ Table records {
   hr_base integer
   hr_maj integer
   annual integer
+  piquet integer
   vac integer
   comment varchar
 }
