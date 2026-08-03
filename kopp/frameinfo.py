@@ -20,6 +20,8 @@ class InfoData:
     hr_total_minutes: int = 0
     a_hours: int = 0
     a_minutes: int = 0
+    piquet_hours: int = 0
+    piquet_minutes: int = 0
     vac_hours: int = 0
     vac_minutes: int = 0
 
@@ -45,6 +47,7 @@ class FrameInfo(wx.Panel):
             info.hr_increased_hours, info.hr_increased_minutes = TimeConverter.from_total_minutes(record.hr_maj)
             info.hr_total_hours, info.hr_total_minutes = TimeConverter.from_total_minutes(record.hr_base + record.hr_maj)
             info.a_hours, info.a_minutes = TimeConverter.from_total_minutes(record.annual)
+            info.piquet_hours, info.piquet_minutes = TimeConverter.from_total_minutes(record.piquet)
             info.vac_hours, info.vac_minutes = TimeConverter.from_total_minutes(record.vac)
         return info
 

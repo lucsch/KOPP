@@ -160,6 +160,7 @@ class FrameMain(wx.Frame):
         frame.data.hr_done = record.hr_base or 0
         frame.data.hr_increased = record.hr_maj or 0
         frame.data.a_total = record.annual or 0
+        frame.data.piquet_total = record.piquet or 0
         frame.data.vac_total = record.vac or 0
         frame.data.comment = record.comment or ""
         frame.data.tags_id = [
@@ -229,6 +230,7 @@ class FrameMain(wx.Frame):
                 "date": record.date.date() if record.date else None,
                 "hr": (record.hr_base or 0) + (record.hr_maj or 0),
                 "annual": record.annual or 0,
+                "piquet": record.piquet or 0,
                 "vac": record.vac or 0,
                 "tags": self._format_record_tags(record),
                 "comment": record.comment or "",
@@ -305,6 +307,7 @@ class FrameMain(wx.Frame):
                     hr_base=data.hr_done,
                     hr_maj=data.hr_increased,
                     annual=data.a_total,
+                    piquet=data.piquet_total,
                     vac=data.vac_total,
                     comment=data.comment,
                 )
@@ -313,6 +316,7 @@ class FrameMain(wx.Frame):
                 record.hr_base = data.hr_done
                 record.hr_maj = data.hr_increased
                 record.annual = data.a_total
+                record.piquet = data.piquet_total
                 record.vac = data.vac_total
                 record.comment = data.comment
                 record.save()
@@ -356,6 +360,7 @@ class FrameMain(wx.Frame):
             self._format_record_date(record.date),
             self._format_minutes((record.hr_base or 0) + (record.hr_maj or 0)),
             self._format_minutes(record.annual or 0),
+            self._format_minutes(record.piquet or 0),
             self._format_minutes(record.vac or 0),
             self._format_record_tags(record),
             record.comment or "",

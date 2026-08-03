@@ -8,6 +8,7 @@ class MainListViewData:
         ("Date", 150),
         ("HR", 70),
         ("A", 70),
+        ("PIQUET", 70),
         ("VAC", 70),
         ("Tags", 130),
         ("Comment", 200),
@@ -79,7 +80,7 @@ class MainListRows:
     def _get_negative_columns(self, values):
         return {
             column: values[column].startswith("-")
-            for column in (1, 2, 3)
+            for column in (1, 2, 3, 4)
             if column < len(values)
         }
 

@@ -22,7 +22,7 @@ class FrameMainListModel(wx.dataview.DataViewIndexListModel):
         return self.row_data.set_value(value, row, column)
 
     def GetAttrByRow(self, row, column, attr):
-        if column in (1, 2, 3) and self.row_data.has_negative_value(row, column):
+        if column in (1, 2, 3, 4) and self.row_data.has_negative_value(row, column):
             attr.SetColour(wx.RED)
             return True
         return False

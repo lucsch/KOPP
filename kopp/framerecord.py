@@ -14,6 +14,7 @@ class FrameRecordData:
         self.hr_done = 0
         self.hr_increased = 0
         self.a_total = 0
+        self.piquet_total = 0
         self.vac_total = 0
         self.comment = ""
         self.tags_id = []
@@ -44,6 +45,9 @@ class FrameRecord(wx.Dialog):
         hm = TimeConverter.from_total_minutes(self.data.a_total)
         self.m_ctrl_a_h.SetValue(hm[0])
         self.m_ctrl_a_m.SetValue(hm[1])
+        hm = TimeConverter.from_total_minutes(self.data.piquet_total)
+        self.m_ctrl_piquet_h.SetValue(hm[0])
+        self.m_ctrl_piquet_m.SetValue(hm[1])
         hm = TimeConverter.from_total_minutes(self.data.vac_total)
         self.m_ctrl_vac_h.SetValue(hm[0])
         self.m_ctrl_vac_m.SetValue(hm[1])
@@ -55,6 +59,7 @@ class FrameRecord(wx.Dialog):
         self.data.hr_done = TimeConverter.to_total_minutes(self.m_ctrl_hrd_h.GetValue(), self.m_ctrl_hrd_m.GetValue())
         self.data.hr_increased = TimeConverter.to_total_minutes(self.m_ctrl_hri_h.GetValue(), self.m_ctrl_hri_m.GetValue())
         self.data.a_total = TimeConverter.to_total_minutes(self.m_ctrl_a_h.GetValue(), self.m_ctrl_a_m.GetValue())
+        self.data.piquet_total = TimeConverter.to_total_minutes(self.m_ctrl_piquet_h.GetValue(), self.m_ctrl_piquet_m.GetValue())
         self.data.vac_total = TimeConverter.to_total_minutes(self.m_ctrl_vac_h.GetValue(), self.m_ctrl_vac_m.GetValue())
         self.data.comment = self.m_ctrl_comment.GetValue()
         self.data.tags_id = self.get_checked_tag_ids()
@@ -288,6 +293,38 @@ class FrameRecord(wx.Dialog):
         sbSizer2.Add(fgSizer2, 1, wx.EXPAND, 5)
 
         bSizer6.Add(sbSizer2, 0, wx.EXPAND | wx.ALL, 5)
+
+        sbSizerPiquet = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _("PIQUET")), wx.VERTICAL)
+
+        fgSizerPiquet = wx.FlexGridSizer(0, 4, 0, 0)
+        fgSizerPiquet.AddGrowableCol(1)
+        fgSizerPiquet.AddGrowableCol(3)
+        fgSizerPiquet.SetFlexibleDirection(wx.BOTH)
+        fgSizerPiquet.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
+
+        self.m_staticTextPiquet = wx.StaticText(sbSizerPiquet.GetStaticBox(), wx.ID_ANY, _("Piquet Total (H:M):"),
+                                                wx.DefaultPosition, wx.DefaultSize, 0)
+        self.m_staticTextPiquet.Wrap(-1)
+
+        fgSizerPiquet.Add(self.m_staticTextPiquet, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+
+        self.m_ctrl_piquet_h = wx.SpinCtrl(sbSizerPiquet.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
+                                           wx.DefaultSize, wx.SP_ARROW_KEYS, -1000, 1000, 0)
+        fgSizerPiquet.Add(self.m_ctrl_piquet_h, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
+
+        self.m_staticTextPiquetSep = wx.StaticText(sbSizerPiquet.GetStaticBox(), wx.ID_ANY, _(":"),
+                                                   wx.DefaultPosition, wx.DefaultSize, 0)
+        self.m_staticTextPiquetSep.Wrap(-1)
+
+        fgSizerPiquet.Add(self.m_staticTextPiquetSep, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+
+        self.m_ctrl_piquet_m = wx.SpinCtrl(sbSizerPiquet.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition,
+                                           wx.DefaultSize, wx.SP_ARROW_KEYS, -59, 59, 0)
+        fgSizerPiquet.Add(self.m_ctrl_piquet_m, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
+
+        sbSizerPiquet.Add(fgSizerPiquet, 1, wx.EXPAND, 5)
+
+        bSizer6.Add(sbSizerPiquet, 0, wx.EXPAND | wx.ALL, 5)
 
         sbSizer21 = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u"VAC")), wx.VERTICAL)
 

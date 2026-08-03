@@ -11,6 +11,7 @@ class RecordTotals:
     hr_base: int = 0
     hr_maj: int = 0
     annual: int = 0
+    piquet: int = 0
     vac: int = 0
 
 
@@ -19,6 +20,7 @@ class RecordCumulativeTotals:
     date: datetime
     hr_total: int = 0
     annual: int = 0
+    piquet: int = 0
     vac: int = 0
 
 
@@ -35,6 +37,7 @@ class RecordTotalsCalculator:
             fn.COALESCE(fn.SUM(Records.hr_base), 0).alias("hr_base"),
             fn.COALESCE(fn.SUM(Records.hr_maj), 0).alias("hr_maj"),
             fn.COALESCE(fn.SUM(Records.annual), 0).alias("annual"),
+            fn.COALESCE(fn.SUM(Records.piquet), 0).alias("piquet"),
             fn.COALESCE(fn.SUM(Records.vac), 0).alias("vac"),
         )
 
@@ -62,6 +65,7 @@ class RecordTotalsCalculator:
             hr_base=row["hr_base"],
             hr_maj=row["hr_maj"],
             annual=row["annual"],
+            piquet=row["piquet"],
             vac=row["vac"],
         )
 
@@ -74,18 +78,21 @@ class RecordCumulativeTotalsCalculator:
         totals = cls._undated_totals()
         cumulative_hr_total = totals.hr_base + totals.hr_maj
         cumulative_annual = totals.annual
+        cumulative_piquet = totals.piquet
         cumulative_vac = totals.vac
         cumulative_totals = []
 
         for row in cls._dated_totals_query():
             cumulative_hr_total += row["hr_base"] + row["hr_maj"]
             cumulative_annual += row["annual"]
+            cumulative_piquet += row["piquet"]
             cumulative_vac += row["vac"]
             cumulative_totals.append(
                 RecordCumulativeTotals(
                     date=row["date"],
                     hr_total=cumulative_hr_total,
                     annual=cumulative_annual,
+                    piquet=cumulative_piquet,
                     vac=cumulative_vac,
                 )
             )
@@ -99,6 +106,7 @@ class RecordCumulativeTotalsCalculator:
                 fn.COALESCE(fn.SUM(Records.hr_base), 0).alias("hr_base"),
                 fn.COALESCE(fn.SUM(Records.hr_maj), 0).alias("hr_maj"),
                 fn.COALESCE(fn.SUM(Records.annual), 0).alias("annual"),
+                fn.COALESCE(fn.SUM(Records.piquet), 0).alias("piquet"),
                 fn.COALESCE(fn.SUM(Records.vac), 0).alias("vac"),
             )
             .where(Records.date.is_null(True))
@@ -109,6 +117,7 @@ class RecordCumulativeTotalsCalculator:
             hr_base=row["hr_base"],
             hr_maj=row["hr_maj"],
             annual=row["annual"],
+            piquet=row["piquet"],
             vac=row["vac"],
         )
 
@@ -120,6 +129,7 @@ class RecordCumulativeTotalsCalculator:
                 fn.COALESCE(fn.SUM(Records.hr_base), 0).alias("hr_base"),
                 fn.COALESCE(fn.SUM(Records.hr_maj), 0).alias("hr_maj"),
                 fn.COALESCE(fn.SUM(Records.annual), 0).alias("annual"),
+                fn.COALESCE(fn.SUM(Records.piquet), 0).alias("piquet"),
                 fn.COALESCE(fn.SUM(Records.vac), 0).alias("vac"),
             )
             .where(Records.date.is_null(False))

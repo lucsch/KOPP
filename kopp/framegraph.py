@@ -56,6 +56,7 @@ class FrameGraph ( wx.Panel ):
 
         hr_total_points = self._points_for(cumulative_totals, "hr_total")
         annual_points = self._points_for(cumulative_totals, "annual")
+        piquet_points = self._points_for(cumulative_totals, "piquet")
         vac_points = self._points_for(cumulative_totals, "vac")
 
         lines = []
@@ -63,6 +64,8 @@ class FrameGraph ( wx.Panel ):
             lines.append(plot.PolyLine(hr_total_points, legend="hr_total", colour="blue", width=2))
         if annual_points:
             lines.append(plot.PolyLine(annual_points, legend="annual", colour="green", width=2))
+        if piquet_points:
+            lines.append(plot.PolyLine(piquet_points, legend="piquet", colour="orange", width=2))
         if vac_points:
             lines.append(plot.PolyLine(vac_points, legend="vac", colour="red", width=2))
 

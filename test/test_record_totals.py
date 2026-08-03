@@ -19,12 +19,13 @@ def database():
     db.close()
 
 
-def create_record(hr_base=None, hr_maj=None, annual=None, vac=None, date=None):
+def create_record(hr_base=None, hr_maj=None, annual=None, piquet=None, vac=None, date=None):
     return Records.create(
         date=date,
         hr_base=hr_base,
         hr_maj=hr_maj,
         annual=annual,
+        piquet=piquet,
         vac=vac,
     )
 
@@ -34,33 +35,36 @@ def test_all_returns_zero_totals_for_empty_database(database):
 
 
 def test_all_sums_all_record_values(database):
-    create_record(hr_base=60, hr_maj=30, annual=10, vac=5)
-    create_record(hr_base=15, hr_maj=-10, annual=20, vac=25)
+    create_record(hr_base=60, hr_maj=30, annual=10, piquet=40, vac=5)
+    create_record(hr_base=15, hr_maj=-10, annual=20, piquet=10, vac=25)
     create_record(hr_base=None, hr_maj=None, annual=None, vac=None)
 
     assert RecordTotalsCalculator.all() == RecordTotals(
         hr_base=75,
         hr_maj=20,
         annual=30,
+        piquet=50,
         vac=30,
     )
 
 
 def test_until_record_id_sums_values_up_to_included_id(database):
-    first = create_record(hr_base=60, hr_maj=30, annual=10, vac=5)
-    second = create_record(hr_base=15, hr_maj=-10, annual=20, vac=25)
-    create_record(hr_base=100, hr_maj=100, annual=100, vac=100)
+    first = create_record(hr_base=60, hr_maj=30, annual=10, piquet=40, vac=5)
+    second = create_record(hr_base=15, hr_maj=-10, annual=20, piquet=10, vac=25)
+    create_record(hr_base=100, hr_maj=100, annual=100, piquet=100, vac=100)
 
     assert RecordTotalsCalculator.until_record_id(first.record_id) == RecordTotals(
         hr_base=60,
         hr_maj=30,
         annual=10,
+        piquet=40,
         vac=5,
     )
     assert RecordTotalsCalculator.until_record_id(second.record_id) == RecordTotals(
         hr_base=75,
         hr_maj=20,
         annual=30,
+        piquet=50,
         vac=30,
     )
 
@@ -103,24 +107,24 @@ def test_cumulative_totals_groups_by_date_and_accumulates_values(database):
     first_date = datetime(2026, 1, 1)
     second_date = datetime(2026, 1, 2)
 
-    create_record(hr_base=60, hr_maj=30, annual=10, vac=5, date=first_date)
-    create_record(hr_base=15, hr_maj=-10, annual=20, vac=25, date=second_date)
+    create_record(hr_base=60, hr_maj=30, annual=10, piquet=40, vac=5, date=first_date)
+    create_record(hr_base=15, hr_maj=-10, annual=20, piquet=10, vac=25, date=second_date)
     create_record(hr_base=None, hr_maj=None, annual=None, vac=None, date=second_date)
 
     assert RecordCumulativeTotalsCalculator.all() == [
-        RecordCumulativeTotals(date=first_date, hr_total=90, annual=10, vac=5),
-        RecordCumulativeTotals(date=second_date, hr_total=95, annual=30, vac=30),
+        RecordCumulativeTotals(date=first_date, hr_total=90, annual=10, piquet=40, vac=5),
+        RecordCumulativeTotals(date=second_date, hr_total=95, annual=30, piquet=50, vac=30),
     ]
 
 
 def test_cumulative_totals_combines_records_with_the_same_date(database):
     record_date = datetime(2026, 1, 1)
 
-    create_record(hr_base=60, hr_maj=30, annual=10, vac=5, date=record_date)
-    create_record(hr_base=15, hr_maj=-10, annual=20, vac=25, date=record_date)
+    create_record(hr_base=60, hr_maj=30, annual=10, piquet=40, vac=5, date=record_date)
+    create_record(hr_base=15, hr_maj=-10, annual=20, piquet=10, vac=25, date=record_date)
 
     assert RecordCumulativeTotalsCalculator.all() == [
-        RecordCumulativeTotals(date=record_date, hr_total=95, annual=30, vac=30),
+        RecordCumulativeTotals(date=record_date, hr_total=95, annual=30, piquet=50, vac=30),
     ]
 
 
@@ -141,10 +145,10 @@ def test_cumulative_totals_uses_chronological_order(database):
 
 
 def test_cumulative_totals_uses_undated_records_as_initial_balance(database):
-    create_record(hr_base=60, hr_maj=30, annual=10, vac=5)
+    create_record(hr_base=60, hr_maj=30, annual=10, piquet=40, vac=5)
     record_date = datetime(2026, 1, 1)
-    create_record(hr_base=15, hr_maj=-10, annual=20, vac=25, date=record_date)
+    create_record(hr_base=15, hr_maj=-10, annual=20, piquet=10, vac=25, date=record_date)
 
     assert RecordCumulativeTotalsCalculator.all() == [
-        RecordCumulativeTotals(date=record_date, hr_total=95, annual=30, vac=30),
+        RecordCumulativeTotals(date=record_date, hr_total=95, annual=30, piquet=50, vac=30),
     ]

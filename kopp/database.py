@@ -17,10 +17,63 @@ class Database:
 
         db.connect()
         db.create_tables([Tags, Records, Tagsmix])
+        self._migrate_records_table(db)
         self.db = db
 
     def close(self):
         self.db.close()
+
+    @staticmethod
+    def _migrate_records_table(db):
+        expected_columns = [
+            "record_id",
+            "date",
+            "hr_base",
+            "hr_maj",
+            "annual",
+            "piquet",
+            "vac",
+            "comment",
+        ]
+        columns = [row[1] for row in db.execute_sql("PRAGMA table_info(records)").fetchall()]
+        if columns == expected_columns:
+            return
+
+        required_legacy_columns = [column for column in expected_columns if column != "piquet"]
+        if any(column not in columns for column in required_legacy_columns):
+            return
+
+        piquet_select = "piquet" if "piquet" in columns else "NULL AS piquet"
+        db.execute_sql("PRAGMA foreign_keys=OFF")
+        try:
+            with db.atomic():
+                db.execute_sql("DROP TABLE IF EXISTS records_migration")
+                db.execute_sql(
+                    """
+                    CREATE TABLE records_migration (
+                        record_id INTEGER NOT NULL PRIMARY KEY,
+                        date DATETIME,
+                        hr_base INTEGER,
+                        hr_maj INTEGER,
+                        annual INTEGER,
+                        piquet INTEGER,
+                        vac INTEGER,
+                        comment VARCHAR(255)
+                    )
+                    """
+                )
+                db.execute_sql(
+                    f"""
+                    INSERT INTO records_migration
+                        (record_id, date, hr_base, hr_maj, annual, piquet, vac, comment)
+                    SELECT record_id, date, hr_base, hr_maj, annual, {piquet_select}, vac, comment
+                    FROM records
+                    """
+                )
+                db.execute_sql("DROP TABLE records")
+                db.execute_sql("ALTER TABLE records_migration RENAME TO records")
+        finally:
+            db.execute_sql("PRAGMA foreign_keys=ON")
 
 
 class ProjectDatabase:

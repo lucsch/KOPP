@@ -17,6 +17,7 @@ class Records(BaseModel):
     hr_base = IntegerField(null=True)
     hr_maj = IntegerField(null=True)
     annual = IntegerField(null=True)
+    piquet = IntegerField(null=True)
     vac = IntegerField(null=True)
     comment = CharField(null=True)
 
