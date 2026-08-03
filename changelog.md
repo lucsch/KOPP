@@ -12,6 +12,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.2.61] - 2026-08-03
+
+### Added
+
+- Adding a new field for "Piquet" (#6)
+- Added an icon in the title bar (#4)
+
+### Fixed
+
+- Some minor UI issues linked to the borders
+
+### Changed
+
+- Changing the +100% to +25% (#5) 
+
 ## [v1.1.53] - 2026-07-23
 
 ### Added
