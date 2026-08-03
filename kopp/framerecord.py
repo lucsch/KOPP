@@ -390,7 +390,7 @@ class FrameRecord(wx.Dialog):
         m_sdbSizer1.AddButton(self.m_sdbSizer1Cancel)
         m_sdbSizer1.Realize()
 
-        bSizer3.Add(m_sdbSizer1, 0, wx.EXPAND, 5)
+        bSizer3.Add(m_sdbSizer1, 0, wx.EXPAND | wx.ALL, 5)
 
         self.SetSizer(bSizer3)
         self.Layout()

@@ -49,7 +49,7 @@ class FrameSettings ( wx.Dialog ):
         m_sdbSizer2.AddButton(self.m_sdbSizer2Cancel)
         m_sdbSizer2.Realize()
 
-        bSizer7.Add(m_sdbSizer2, 0, wx.EXPAND, 5)
+        bSizer7.Add(m_sdbSizer2, 0, wx.EXPAND | wx.ALL, 5)
 
         self.SetSizer(bSizer7)
         self.Layout()
