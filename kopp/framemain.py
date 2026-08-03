@@ -8,25 +8,22 @@ import wx.dataview
 import wx.svg
 
 from kopp.bitmaps import BitmapGeneral
+from kopp.database import ProjectDatabase
+from kopp.database_model import Records, Tags, Tagsmix
+from kopp.frameabout import FrameAbout
 from kopp.framegraph import FrameGraph
 from kopp.frameinfo import FrameInfo
 from kopp.framemainlist import FrameMainListView
-from kopp.frameabout import FrameAbout
-from kopp.framesettings import FrameSettings
-from kopp.database import ProjectDatabase
-from kopp.database_model import Records, Tags, Tagsmix
 from kopp.framerecord import FrameRecord
+from kopp.framesettings import FrameSettings
 from kopp.record_totals import (
     RecordCumulativeTotalsCalculator,
     RecordTotals,
     RecordTotalsCalculator,
 )
 from kopp.timeconverter import TimeConverter
+from kopp.version import COMMIT_NUMBER, PROG_NAME, VERSION_MAJOR_MINOR
 from kopp.xlsx_exporter import XlsxExporter
-
-from kopp.version import COMMIT_NUMBER
-from kopp.version import VERSION_MAJOR_MINOR
-from kopp.version import PROG_NAME
 
 _ = gettext.gettext
 
@@ -40,11 +37,18 @@ class FrameMain(wx.Frame):
         self.m_status_bar = self.CreateStatusBar(3, wx.STB_DEFAULT_STYLE, wx.ID_ANY)
         self.m_status_bar.SetStatusWidths([200, -1, 150])
         self.SetStatusBarPane(-1)
-        self.m_status_bar.SetStatusText("version {}.{}".format(VERSION_MAJOR_MINOR, COMMIT_NUMBER), 2)
+        self.m_status_bar.SetStatusText(f"version {VERSION_MAJOR_MINOR}.{COMMIT_NUMBER}", 2)
 
         self._create_menubar()
         self._create_toolbar()
         self._create_controls()
+
+        # set titlebar icon
+        icon = wx.Icon()
+        icon_size = wx.Size(16, 16)
+        bmp_main = wx.svg.SVGimage.CreateFromBytes(BitmapGeneral.ICON_MAIN.encode("utf-8")).ConvertToScaledBitmap(icon_size)
+        icon.CopyFromBitmap(bmp_main)
+        self.SetIcon(icon)
 
         self.m_prj_database = ProjectDatabase()
         self.m_prj_modified = False
