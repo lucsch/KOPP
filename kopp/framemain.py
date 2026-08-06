@@ -16,6 +16,7 @@ from kopp.frameinfo import FrameInfo
 from kopp.framemainlist import FrameMainListView
 from kopp.framerecord import FrameRecord
 from kopp.framesettings import FrameSettings
+from kopp.framesupport import FrameSupport
 from kopp.record_totals import (
     RecordCumulativeTotalsCalculator,
     RecordTotals,
@@ -34,6 +35,7 @@ class FrameMain(wx.Frame):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=PROG_NAME, pos=wx.DefaultPosition,
                           size=wx.Size(1000, 600), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
+        self.m_support_windows = []
         self.m_status_bar = self.CreateStatusBar(3, wx.STB_DEFAULT_STYLE, wx.ID_ANY)
         self.m_status_bar.SetStatusWidths([200, -1, 150])
         self.SetStatusBarPane(-1)
@@ -64,6 +66,7 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_export_xlsx, id=self.m_menui_rec_export_xlsx.GetId())
         self.Bind(wx.EVT_MENU, self.on_view_info, id=self.m_menui_view_info.GetId())
         self.Bind(wx.EVT_MENU, self.on_view_graph, id=self.m_menui_view_graph.GetId())
+        self.Bind(wx.EVT_MENU, self.on_new_support_window, id=self.m_menui_new_support_window.GetId())
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
         self.Bind(wx.EVT_MENU, self.on_website, id=self.m_menui_help_web.GetId())
         self.Bind(wx.EVT_MENU, self.on_settings, id=self.m_menui_settings.GetId())
@@ -450,6 +453,22 @@ class FrameMain(wx.Frame):
         pane.Show(show_action)
         self.m_aui_manager.Update()
 
+    def on_new_support_window(self, event):
+        # prompt for a name for the new support window
+        with wx.TextEntryDialog(self, _("Enter a name for the support window:"), _("New support window"), "") as dlg:
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+            name = dlg.GetValue().strip()
+            if not name:
+                wx.MessageBox(_("Window name cannot be empty."), _("Info"), wx.OK | wx.ICON_INFORMATION)
+                return
+
+        # create and show a non-modal support frame; keep a reference to avoid GC
+        frame = FrameSupport(self)
+        frame.SetTitle(name)
+        self.m_support_windows.append(frame)
+        frame.Show()
+
     def on_pane_close(self, event):
         if event.GetPane().window == self.m_info:
             self.m_menui_view_info.Check(False)
@@ -516,6 +535,11 @@ class FrameMain(wx.Frame):
         self.m_menui_view_graph = wx.MenuItem(self.m_menu_view, wx.ID_ANY,_("Graph Window...") + "\t" + "Ctrl+G",wx.EmptyString,wx.ITEM_CHECK)
         self.m_menu_view.Append(self.m_menui_view_graph)
         self.m_menui_view_graph.Check(True)
+
+        self.m_menu_view.AppendSeparator()
+
+        self.m_menui_new_support_window = wx.MenuItem(self.m_menu_view, wx.ID_ANY, _("New support window...") + "\t" + "Ctrl+V", wx.EmptyString, wx.ITEM_NORMAL)
+        self.m_menu_view.Append(self.m_menui_new_support_window)
 
         self.m_menubar.Append(self.m_menu_view, _("View"))
 
