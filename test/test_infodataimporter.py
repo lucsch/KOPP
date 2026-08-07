@@ -128,7 +128,7 @@ Heures de nuit
     """
     assert importer.process(str)
     data = importer.get_processed_data()
-    assert data.title == ""
+    assert data.title == "Clipboard"
     assert data.hr_total_hours == 152
     assert data.hr_total_minutes == 6
     assert data.piquet_hours == 22

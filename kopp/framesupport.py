@@ -1,6 +1,3 @@
-import os
-import sys
-
 import wx
 import wx.xrc
 import wx.html
