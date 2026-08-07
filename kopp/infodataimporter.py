@@ -53,30 +53,41 @@ class InfoDataImporter:
 
         soldes_hs_minutes = 0
         soldes_piquet_minutes = 0
+        something_imported = False
 
         # process the text line by line. and get the type of line (_get_type_of_line).
         for index, line in enumerate(lines):
 
             if self._get_type_of_line(line) == InfoLineType.ANNUALISATION:
                 self.m_data.a_hours, self.m_data.a_minutes = TimeConverter.from_total_minutes(self._get_minutes_from_line(lines[index + 1]))
+                something_imported = True
 
             if self._get_type_of_line(line) == InfoLineType.SOLDE_VACANCES:
                 self.m_data.vac_hours, self.m_data.vac_minutes = TimeConverter.from_total_minutes(self._get_minutes_from_line(lines[index + 1]))
+                something_imported = True
 
             if self._get_type_of_line(line) == InfoLineType.SOLDE_HS:
                 soldes_hs_minutes += self._get_minutes_from_line(lines[index + 1])
+                something_imported = True
 
             if self._get_type_of_line(line) == InfoLineType.SOLDE_HS_A_1:
                 soldes_hs_minutes += self._get_minutes_from_line(lines[index + 1])
+                something_imported = True
 
             if self._get_type_of_line(line) == InfoLineType.SOLDE_PIQUET:
                 soldes_piquet_minutes += self._get_minutes_from_line(lines[index + 1])
+                something_imported = True
 
             if self._get_type_of_line(line) == InfoLineType.SOLDE_PIQUET_A_1:
                 soldes_piquet_minutes += self._get_minutes_from_line(lines[index + 1])
+                something_imported = True
 
         self.m_data.piquet_hours, self.m_data.piquet_minutes = TimeConverter.from_total_minutes(soldes_piquet_minutes)
         self.m_data.hr_total_hours, self.m_data.hr_total_minutes = TimeConverter.from_total_minutes(soldes_hs_minutes)
+
+        if something_imported:
+            self.m_data.title = "Clipboard"
+
         return True
 
     def _get_minutes_from_line(self, line: str) -> int:

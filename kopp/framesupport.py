@@ -5,7 +5,7 @@ import wx
 import wx.xrc
 import wx.html
 from kopp.frameinfo import load_html_template
-from kopp.infodataimporter import InfoData
+from kopp.infodataimporter import InfoData, InfoDataImporter
 
 import gettext
 _ = gettext.gettext
@@ -24,14 +24,34 @@ class FrameSupport ( wx.Frame ):
         self.Bind(wx.EVT_BUTTON, self.on_button_import_clipboard, id=self.m_btn_import_clipboard.GetId())
 
     def on_button_import_clipboard( self, event):
-        wx.LogWarning("function not implemented")
+        # open the clipboard and check if it content string
+        if not wx.TheClipboard.IsOpened():  # may crash, otherwise
+            do = wx.TextDataObject()
+            wx.TheClipboard.Open()
+            success = wx.TheClipboard.GetData(do)
+            wx.TheClipboard.Close()
+            if not success:
+                wx.MessageBox(
+                    "There is no data in the clipboard\nCopy some data to the clipboard",
+                    "Warning",
+                    wx.ICON_WARNING,
+                )
+                return
+
+            self.m_ctrl_textctrl.SetValue(do.GetText())
+            importer = InfoDataImporter()
+            if importer.process(do.GetText()):
+                self.m_info_data = importer.get_processed_data()
+                self._update_html()
+            else:
+                wx.LogWarning("Error Importing data from clipboard. Please check the format of the data.")
 
     def _update_html(self):
         html_final = self.html_template.render(info_general=self.m_info_data)
         self.m_ctrl_html.SetPage(html_final)
 
     def _create_controls(self):
-        self.SetSizeHints(wx.Size(400, 260), wx.DefaultSize)
+        self.SetSizeHints(wx.Size(400, 360), wx.DefaultSize)
 
         bSizer9 = wx.BoxSizer(wx.VERTICAL)
 
