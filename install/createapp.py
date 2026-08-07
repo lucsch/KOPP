@@ -42,7 +42,7 @@ class CreateApp:
                 if "bundle_identifier=None)" in line:
                     print("             bundle_identifier=None,")
                     print("             info_plist={")
-                    print(f"                 'CFBundleShortVersionString': '1.1.{self.m_commit_number}',")
+                    print(f"                 'CFBundleShortVersionString': '1.3.{self.m_commit_number}',")
                     print("                 'NSHumanReadableCopyright': '(c) 2026, Lucien SCHREIBER',")
                     print("                 'NSHighResolutionCapable': 'True'")
                     print("             })")

@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.3.71] - 2026-08-07
+
+### Added
+
+- Adding a new support window for importing the clipboard (#8)
+
+### Changed
+
+- Adding colors in the info window to match the graph window (#7)
+
 ## [v1.2.61] - 2026-08-03
 
 ### Added
