@@ -4,7 +4,8 @@ import sys
 import wx
 import wx.xrc
 import wx.html
-from kopp.frameinfo import InfoData, load_html_template
+from kopp.frameinfo import load_html_template
+from kopp.infodataimporter import InfoData
 
 import gettext
 _ = gettext.gettext
@@ -19,6 +20,11 @@ class FrameSupport ( wx.Frame ):
 
         self._create_controls()
         self._update_html()
+
+        self.Bind(wx.EVT_BUTTON, self.on_button_import_clipboard, id=self.m_btn_import_clipboard.GetId())
+
+    def on_button_import_clipboard( self, event):
+        wx.LogWarning("function not implemented")
 
     def _update_html(self):
         html_final = self.html_template.render(info_general=self.m_info_data)

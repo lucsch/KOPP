@@ -1,6 +1,6 @@
 import os
 import sys
-from dataclasses import dataclass
+
 
 import wx
 import wx.html
@@ -8,23 +8,8 @@ from jinja2 import Environment, FileSystemLoader
 
 from kopp.record_totals import RecordTotals
 from kopp.timeconverter import TimeConverter
+from kopp.infodataimporter import InfoData
 
-
-@dataclass
-class InfoData:
-    title: str = ""
-    hr_done_hours: int = 0
-    hr_done_minutes: int = 0
-    hr_increased_hours: int = 0
-    hr_increased_minutes: int = 0
-    hr_total_hours: int = 0
-    hr_total_minutes: int = 0
-    a_hours: int = 0
-    a_minutes: int = 0
-    piquet_hours: int = 0
-    piquet_minutes: int = 0
-    vac_hours: int = 0
-    vac_minutes: int = 0
 
 def load_html_template(template_name: str):
     """Load the HTML template in memory from the templates folder."""
