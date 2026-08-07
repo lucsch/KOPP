@@ -26,6 +26,16 @@ class InfoData:
     vac_hours: int = 0
     vac_minutes: int = 0
 
+def load_html_template(template_name: str):
+    """Load the HTML template in memory from the templates folder."""
+    if getattr(sys, 'frozen', False):  # if frozen with pyinstaller, MEIPASS is set
+        base_folder = sys._MEIPASS
+    else:
+        base_folder = os.path.dirname(os.path.abspath(__file__))
+
+    template_folder = os.path.join(base_folder, 'templates')
+    env = Environment(loader=FileSystemLoader(template_folder))
+    return env.get_template(template_name)
 
 class FrameInfo(wx.Panel):
     """Dockable information panel for the main frame."""
@@ -36,7 +46,7 @@ class FrameInfo(wx.Panel):
         self.info_selected = InfoData()
         self.info_total = InfoData()
 
-        self.html_template = self._load_html_template()
+        self.html_template = load_html_template('info.html')
 
         self._create_controls()
         self._update_html()
@@ -67,17 +77,6 @@ class FrameInfo(wx.Panel):
 
         self.SetSizer(bSizer2)
         self.Layout()
-
-    def _load_html_template(self):
-        """load the html template in memory from the templates folder"""
-        if getattr(sys, 'frozen', False): # if frozen with pyinstaller, MEIPASS is set
-            base_folder = sys._MEIPASS
-        else:
-            base_folder = os.path.dirname(os.path.abspath(__file__))
-
-        template_folder = os.path.join(base_folder, 'templates')
-        env = Environment(loader=FileSystemLoader(template_folder))
-        return env.get_template('info.html')
 
     def _update_html(self):
         html_final = self.html_template.render(info_selected=self.info_selected,

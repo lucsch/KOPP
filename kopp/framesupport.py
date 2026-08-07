@@ -4,8 +4,7 @@ import sys
 import wx
 import wx.xrc
 import wx.html
-from jinja2 import Environment, FileSystemLoader
-from kopp.frameinfo import InfoData
+from kopp.frameinfo import InfoData, load_html_template
 
 import gettext
 _ = gettext.gettext
@@ -16,21 +15,10 @@ class FrameSupport ( wx.Frame ):
         wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = _(u"Support"), pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
         self.m_info_data = InfoData()
-        self.html_template = self._load_html_template()
+        self.html_template = load_html_template('support.html')
 
         self._create_controls()
         self._update_html()
-
-    def _load_html_template(self):
-        """load the html template in memory from the templates folder"""
-        if getattr(sys, 'frozen', False): # if frozen with pyinstaller, MEIPASS is set
-            base_folder = sys._MEIPASS
-        else:
-            base_folder = os.path.dirname(os.path.abspath(__file__))
-
-        template_folder = os.path.join(base_folder, 'templates')
-        env = Environment(loader=FileSystemLoader(template_folder))
-        return env.get_template('support.html')
 
     def _update_html(self):
         html_final = self.html_template.render(info_general=self.m_info_data)
