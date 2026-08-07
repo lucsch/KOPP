@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+
+{% if info_general.title != "" %}
+<h1>{{ info_general.title }}</h1>
+<table>
+    <tbody>
+    <tr>
+        <td><font color="blue">HR total</font></td>
+        <td><font color="blue">{{ info_general.hr_total_hours }}h{{ info_general.hr_total_minutes }}m</font></td>
+    </tr>
+    <tr>
+        <td><font color="green">A</font></td>
+        <td><font color="green">{{ info_general.a_hours }}h{{ info_general.a_minutes }}m</font></td>
+    </tr>
+    <tr>
+        <td><font color="orange">PIQUET</font></td>
+        <td><font color="orange">{{ info_general.piquet_hours }}h{{ info_general.piquet_minutes }}m</font></td>
+    </tr>
+    <tr>
+        <td><font color="red">VAC</font></td>
+        <td><font color="red">{{ info_general.vac_hours }}h{{ info_general.vac_minutes }}m</font></td>
+    </tr>
+    </tbody>
+</table>
+
+{% else %}
+<h1>Nothing to display</h1>
+<p>Import clipboard content...</p>
+{% endif %}
+
+</body>
+</html>
