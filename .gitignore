@@ -17,3 +17,5 @@ bin/*
 
 # local files
 _local*
+
+.codegraph
