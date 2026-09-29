@@ -25,6 +25,7 @@ from kopp.record_totals import (
 from kopp.timeconverter import TimeConverter
 from kopp.version import COMMIT_NUMBER, PROG_NAME, VERSION_MAJOR_MINOR
 from kopp.xlsx_exporter import XlsxExporter
+from kopp.framecaclulator import FrameCalculator
 
 _ = gettext.gettext
 
@@ -70,6 +71,7 @@ class FrameMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_about, id=self.m_menui_help_about.GetId())
         self.Bind(wx.EVT_MENU, self.on_website, id=self.m_menui_help_web.GetId())
         self.Bind(wx.EVT_MENU, self.on_settings, id=self.m_menui_settings.GetId())
+        self.Bind(wx.EVT_MENU, self.on_calculator, id=self.m_menui_calculator.GetId())
         self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
         self.Bind(wx.EVT_CLOSE, self.on_close)
         self.m_list.Bind(wx.dataview.EVT_DATAVIEW_ITEM_ACTIVATED, self.on_list_item_activated)
@@ -431,6 +433,10 @@ class FrameMain(wx.Frame):
     def on_website(self, event):
         wx.LaunchDefaultBrowser("https://github.com/lucsch/KOPP")
 
+    def on_calculator(self, event):
+        frame = FrameCalculator(self)
+        frame.Show()
+
     def on_settings(self, event):
         my_auto_load_project_path = self.m_config.Read("auto_load_project", "")
         frame = FrameSettings(self)
@@ -540,6 +546,9 @@ class FrameMain(wx.Frame):
 
         self.m_menui_new_support_window = wx.MenuItem(self.m_menu_view, wx.ID_ANY, _("New support window...") + "\t" + "Ctrl+V", wx.EmptyString, wx.ITEM_NORMAL)
         self.m_menu_view.Append(self.m_menui_new_support_window)
+
+        self.m_menui_calculator = wx.MenuItem(self.m_menu_view, wx.ID_ANY, _("Calculator...") + "\t" + "Ctrl+K", wx.EmptyString, wx.ITEM_NORMAL)
+        self.m_menu_view.Append(self.m_menui_calculator)
 
         self.m_menubar.Append(self.m_menu_view, _("View"))
 

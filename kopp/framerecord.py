@@ -6,6 +6,7 @@ import wx.adv
 
 from kopp.database_model import Tags
 from kopp.timeconverter import TimeConverter
+from kopp.framecaclulator import FrameCalculator
 
 _ = gettext.gettext
 
@@ -79,6 +80,15 @@ class FrameRecord(wx.Dialog):
         self.m_ctrl_btn_tag.Bind(wx.EVT_BUTTON, self.on_add_tag)
         self.m_ctrl_btn_50.Bind(wx.EVT_BUTTON, self.on_add_50)
         self.m_ctrl_btn_25.Bind(wx.EVT_BUTTON, self.on_add_25)
+        self.Bind(wx.EVT_BUTTON, self.on_calculator, id=self.m_ctrl_btn_calculator.GetId())
+        self.Bind(wx.EVT_BUTTON, self.on_save, id=wx.ID_SAVE)
+
+    def on_calculator(self, event):
+        dlg = FrameCalculator(self)
+        dlg.ShowModal()
+
+    def on_save(self, event):
+        self.EndModal(wx.ID_SAVE)
 
     def on_hr_value_changed(self, event):
         self._update_hr_total()
@@ -387,14 +397,26 @@ class FrameRecord(wx.Dialog):
 
         bSizer3.Add(bSizer5, 1, wx.EXPAND, 5)
 
-        m_sdbSizer1 = wx.StdDialogButtonSizer()
-        self.m_sdbSizer1Save = wx.Button(self, wx.ID_OK)
-        m_sdbSizer1.AddButton(self.m_sdbSizer1Save)
-        self.m_sdbSizer1Cancel = wx.Button(self, wx.ID_CANCEL)
-        m_sdbSizer1.AddButton(self.m_sdbSizer1Cancel)
-        m_sdbSizer1.Realize()
+        bSizer14 = wx.BoxSizer(wx.HORIZONTAL)
 
-        bSizer3.Add(m_sdbSizer1, 0, wx.EXPAND | wx.ALL, 5)
+        self.m_ctrl_btn_calculator = wx.Button(
+            self, wx.ID_ANY, _("Calculator"), wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        bSizer14.Add(self.m_ctrl_btn_calculator, 0, wx.ALL, 5)
+
+        bSizer14.Add((0, 0), 1, wx.EXPAND, 5)
+
+        self.m_ctrl_btn_cancel = wx.Button(
+            self, wx.ID_CANCEL, _("Cancel"), wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        bSizer14.Add(self.m_ctrl_btn_cancel, 0, wx.ALL, 5)
+
+        self.m_ctrl_btn_save = wx.Button(
+            self, wx.ID_SAVE, _("Save"), wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        bSizer14.Add(self.m_ctrl_btn_save, 0, wx.ALL, 5)
+
+        bSizer3.Add(bSizer14, 0, wx.EXPAND | wx.ALL, 5)
 
         self.SetSizer(bSizer3)
         self.Layout()
