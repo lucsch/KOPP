@@ -1,3 +1,6 @@
+# Excel dates have no timezone; expected values must match openpyxl's naive datetimes.
+# ruff: noqa: DTZ001
+
 from datetime import date, datetime, timedelta
 
 from openpyxl import load_workbook

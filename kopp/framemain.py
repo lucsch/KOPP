@@ -411,12 +411,13 @@ class FrameMain(wx.Frame):
         return self._date_to_datetime(value)
 
     def _date_to_datetime(self, value):
+        # Calendar dates stay naive to match database records and Excel exports.
         if isinstance(value, datetime):
             return value
         if isinstance(value, date):
-            return datetime(value.year, value.month, value.day)
+            return datetime(value.year, value.month, value.day)  # noqa: DTZ001
         if isinstance(value, wx.DateTime) and value.IsValid():
-            return datetime(value.GetYear(), value.GetMonth() + 1, value.GetDay())
+            return datetime(value.GetYear(), value.GetMonth() + 1, value.GetDay())  # noqa: DTZ001
         return None
 
     def _datetime_to_wx_date(self, value):

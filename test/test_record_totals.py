@@ -1,3 +1,6 @@
+# Records stores calendar dates as naive datetimes; fixtures must match database values.
+# ruff: noqa: DTZ001
+
 from datetime import datetime
 
 import pytest
