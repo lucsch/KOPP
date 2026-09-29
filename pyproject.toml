@@ -6,18 +6,15 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "jinja2>=3.1.6",
-    "numpy>=2.5.1",
+    "numpy==2.5.3",
     "openpyxl>=3.1.5",
-    "peewee==4.3.0",
-    "pyinstaller>=6.21.0",
-    "ruff==0.15.22",
-    "wxpython==4.3.1; sys_platform == 'win32'",
-    "wxpython==4.3.1; sys_platform == 'darwin'",
-    "wxpython==4.2.5; sys_platform == 'linux'",
+    "peewee==4.5.2",
+    "pyinstaller==6.22.3",
+    "wxpython==4.3.1",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
-    "ruff>=0.15.21",
+    "ruff>=0.16.9",
 ]
