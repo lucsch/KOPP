@@ -1,5 +1,6 @@
 from kopp.infodataimporter import InfoDataImporter, InfoLineType
 
+
 def test_infodataimporter_basic():
     importer = InfoDataImporter()
     assert not importer.process("")

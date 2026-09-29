@@ -38,7 +38,7 @@ class CreateApp:
     def modify_spec_file(self):
         """modifiy the spec file before building"""
         if self.plateform == ACTIVE_PLATEFORM[2]:  # OSX
-            for line in fileinput.input(os.path.join(self.binpath, f"kopp_{self.m_commit_number}.spec"), inplace=1):
+            for line in fileinput.input(os.path.join(self.binpath, f"kopp_{self.m_commit_number}.spec"), inplace=1):  # noqa: SIM115
                 if "bundle_identifier=None)" in line:
                     print("             bundle_identifier=None,")
                     print("             info_plist={")
@@ -82,7 +82,7 @@ class CreateApp:
             print(f"Command not found: {command[0]}")
             print(f"Error details: {e}")
             return False
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print(f"Unexpected error running command: {' '.join(command)}")
             print(f"Error details: {e}")
             return False
@@ -101,7 +101,7 @@ class CreateApp:
             print("PyInstaller not found. Please ensure it is installed and in your PATH.")
             print(f"Error details: {e}")
             return False
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print(f"Unexpected error running pyinstaller kopp_{self.m_commit_number}.spec")
             print(f"Error details: {e}")
             return False

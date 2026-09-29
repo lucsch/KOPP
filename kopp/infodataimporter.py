@@ -1,6 +1,7 @@
+import re
 from dataclasses import dataclass
 from enum import Enum, auto
-import re
+
 from kopp.timeconverter import TimeConverter
 
 

@@ -1,19 +1,21 @@
 from collections import OrderedDict
+from typing import ClassVar
 
 
 class MainListViewData:
     """Main records list column names and widths."""
-
-    column_info = OrderedDict([
-        ("Date", 150),
-        ("HR", 70),
-        ("A", 70),
-        ("PIQUET", 70),
-        ("VAC", 70),
-        ("Tags", 130),
-        ("Comment", 200),
-    ])
-
+    # Annotation explicite pour indiquer une variable de classe globale
+    column_info: ClassVar[OrderedDict[str, int]] = OrderedDict(
+        [
+            ("Date", 150),
+            ("HR", 70),
+            ("A", 70),
+            ("PIQUET", 70),
+            ("VAC", 70),
+            ("Tags", 130),
+            ("Comment", 200),
+        ]
+    )
 
 class MainListRows:
     def __init__(self):
@@ -36,7 +38,7 @@ class MainListRows:
             if not self._has_row(row) or not self._has_column(column):
                 return ""
             return self.rows[row]["values"][column]
-        except Exception:
+        except (KeyError, IndexError):
             return ""
 
     def set_value(self, value, row, column):

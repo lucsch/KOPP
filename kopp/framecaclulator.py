@@ -1,6 +1,7 @@
 import gettext
 
 import wx
+
 from kopp.timeconverter import TimeConverter
 
 _ = gettext.gettext

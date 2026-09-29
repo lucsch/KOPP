@@ -1,16 +1,18 @@
+import gettext
+
 import wx
-import wx.xrc
 import wx.html
+import wx.xrc
+
 from kopp.frameinfo import load_html_template
 from kopp.infodataimporter import InfoData, InfoDataImporter
 
-import gettext
 _ = gettext.gettext
 
 class FrameSupport ( wx.Frame ):
 
     def __init__( self, parent ):
-        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = _(u"Support"), pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = _("Support"), pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
         self.m_info_data = InfoData()
         self.html_template = load_html_template('support.html')
@@ -66,7 +68,7 @@ class FrameSupport ( wx.Frame ):
         bSizer11.Add(self.m_ctrl_html, 1, wx.ALL | wx.EXPAND, 5)
 
         self.m_panel_info.SetSizer(bSizer11)
-        self.m_notebook1.AddPage(self.m_panel_info, _(u"Info"), True)
+        self.m_notebook1.AddPage(self.m_panel_info, _("Info"), True)
         self.m_panel_raw = wx.Panel(self.m_notebook1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
         bSizer12 = wx.BoxSizer(wx.VERTICAL)
 
@@ -76,11 +78,11 @@ class FrameSupport ( wx.Frame ):
         bSizer12.Add(self.m_ctrl_textctrl, 1, wx.ALL | wx.EXPAND, 5)
 
         self.m_panel_raw.SetSizer(bSizer12)
-        self.m_notebook1.AddPage(self.m_panel_raw, _(u"Raw"), False)
+        self.m_notebook1.AddPage(self.m_panel_raw, _("Raw"), False)
 
         bSizer10.Add(self.m_notebook1, 1, wx.EXPAND | wx.ALL, 5)
 
-        self.m_btn_import_clipboard = wx.Button(self.m_panel1, wx.ID_ANY, _(u"Import clipboard"), wx.DefaultPosition,
+        self.m_btn_import_clipboard = wx.Button(self.m_panel1, wx.ID_ANY, _("Import clipboard"), wx.DefaultPosition,
                                                 wx.DefaultSize, 0)
         bSizer10.Add(self.m_btn_import_clipboard, 0, wx.ALL, 5)
 

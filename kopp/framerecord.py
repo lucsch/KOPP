@@ -1,12 +1,11 @@
-#!/usr/bin/env/ python3
 import gettext
 
 import wx
 import wx.adv
 
 from kopp.database_model import Tags
-from kopp.timeconverter import TimeConverter
 from kopp.framecaclulator import FrameCalculator
+from kopp.timeconverter import TimeConverter
 
 _ = gettext.gettext
 
@@ -123,7 +122,7 @@ class FrameRecord(wx.Dialog):
                 else:
                     tag = Tags.create(desc=tag_name)
                     created = True
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             wx.MessageBox(_("Failed to create tag: {}").format(exc), _("Error"), wx.OK | wx.ICON_ERROR)
             return
 

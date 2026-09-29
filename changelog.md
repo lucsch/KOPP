@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.4.XX] 
+
 ### Added 
+
+- Adding a new calculator Dialog for time manipulation (#9)
 
 ### Changed
 

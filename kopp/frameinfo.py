@@ -1,14 +1,13 @@
 import os
 import sys
 
-
 import wx
 import wx.html
 from jinja2 import Environment, FileSystemLoader
 
+from kopp.infodataimporter import InfoData
 from kopp.record_totals import RecordTotals
 from kopp.timeconverter import TimeConverter
-from kopp.infodataimporter import InfoData
 
 
 def load_html_template(template_name: str):

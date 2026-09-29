@@ -11,6 +11,7 @@ from kopp.bitmaps import BitmapGeneral
 from kopp.database import ProjectDatabase
 from kopp.database_model import Records, Tags, Tagsmix
 from kopp.frameabout import FrameAbout
+from kopp.framecaclulator import FrameCalculator
 from kopp.framegraph import FrameGraph
 from kopp.frameinfo import FrameInfo
 from kopp.framemainlist import FrameMainListView
@@ -25,7 +26,6 @@ from kopp.record_totals import (
 from kopp.timeconverter import TimeConverter
 from kopp.version import COMMIT_NUMBER, PROG_NAME, VERSION_MAJOR_MINOR
 from kopp.xlsx_exporter import XlsxExporter
-from kopp.framecaclulator import FrameCalculator
 
 _ = gettext.gettext
 
@@ -162,7 +162,7 @@ class FrameMain(wx.Frame):
         if not selection:
             return
 
-        row, record = selection
+        _row, record = selection
         frame = FrameRecord(self)
         frame.data.database_handle = self.m_prj_database.database
         frame.data.date = self._datetime_to_wx_date(record.date)
@@ -291,7 +291,7 @@ class FrameMain(wx.Frame):
         total = RecordTotalsCalculator.all()
         selection = self._get_selected_record(show_message=False)
         if selection:
-            row, record = selection
+            _row, record = selection
             selected = RecordTotalsCalculator.until_record_id(record.record_id)
             selected_title = self._format_record_date(record.date)
         else:
