@@ -31,8 +31,8 @@ jobs:
 
       - name: Install wxPython wheel
         run: >
-          uv pip install
-          https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-24.04/wxpython-4.2.5-cp314-cp314-linux_x86_64.whl
+          uv pip install -U
+          https://github.com/wxWidgets/Phoenix/releases/download/wxPython-4.3.1/wxpython-4.3.1+ubuntu2404-cp314-cp314-linux_x86_64.whl
 
       - name: Run ruff
         run: uv run --no-sync ruff check .
